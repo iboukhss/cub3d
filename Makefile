@@ -1,24 +1,45 @@
+NAME = cub3d
+
 CC = cc
 RM = rm -f
 
-CFLAGS = -Wall -Wextra -Werror
+MAKEFLAGS += --no-print-directory
 
-all: cub3d
+MLX_DIR = minilibx-linux
 
-cub3d: cub3d.o
-	$(CC) $(CFLAGS) -o cub3d cub3d.o
+SRCS = cub3d.c
+HDRS = cub3d.h
 
-cub3d.o: cub3d.c
-	$(CC) $(CFLAGS) -c -o cub3d.o cub3d.c
+OBJS = $(SRCS:.c=.o)
+DEPS = $(OBJS:.o=.d)
+
+CFLAGS += -Wall -Wextra -Werror
+CPPFLAGS = -I$(MLX_DIR)
+LDFLAGS = -L$(MLX_DIR)
+LDLIBS = -lmlx -lXext -lX11 -lm
+
+all: $(NAME)
+
+$(NAME): $(OBJS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 clean:
-	$(RM) cub3d.o
+	$(RM) $(OBJS)
 
 fclean: clean
-	$(RM) cub3d
+	$(RM) $(NAME)
 
 re:
 	$(MAKE) fclean
 	$(MAKE) all
 
-.PHONY: all clean fclean re
+norm:
+	-norminette $(SRCS) $(HDRS)
+
+vg: $(NAME)
+	valgrind --leak-check=full --track-origins=yes ./$<
+
+.PHONY: all clean fclean re norm

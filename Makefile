@@ -24,7 +24,7 @@ else ifeq ($(BUILD),debug)
 	CFLAGS += -g3
 else ifeq ($(BUILD),asan)
 	CFLAGS += -ggdb3 -fsanitize=address,undefined
-	LDLIBS += -lasan -lubsan
+	LDFLAGS += -fsanitize=address,undefined
 endif
 
 all: $(NAME)

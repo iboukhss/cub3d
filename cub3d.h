@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 21:13:52 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/01 13:42:03 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/01 16:28:32 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,10 @@ typedef struct s_map
 
 typedef struct s_player
 {
-	int	x_pos;
-	int	y_pos;
-	int	fov;
-	int	width;
+	float	x_pos;
+	float	y_pos;
+	int		fov;
+	int		width;
 }	t_player;
 
 typedef struct s_config

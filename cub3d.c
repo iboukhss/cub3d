@@ -6,13 +6,14 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 13:54:53 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/01 13:42:50 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/01 17:40:59 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
 #include <mlx.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 static int	init_game(t_game *game)
@@ -26,54 +27,6 @@ static int	init_game(t_game *game)
 	game->win.frame.height = game->win.height;
 	game->win.frame.img_ctx = mlx_new_image(game->mlx_ctx, game->win.frame.width, game->win.frame.height);
 	game->win.frame.addr = mlx_get_data_addr(game->win.frame.img_ctx, &game->win.frame.bits_per_pixel, &game->win.frame.bytes_per_line, &game->win.frame.endian);
-	return (0);
-}
-
-static int	destroy_game(t_game *game)
-{
-	mlx_destroy_image(game->mlx_ctx, game->win.frame.img_ctx);
-	mlx_destroy_window(game->mlx_ctx, game->win.win_ctx);
-	mlx_destroy_display(game->mlx_ctx);
-	free(game->mlx_ctx);
-	return (0);
-}
-
-static int	key_release_hook(int keysym, void *mlx_ctx)
-{
-	if (keysym == XK_Escape)
-	{
-		mlx_loop_end(mlx_ctx);
-	}
-	return (0);
-}
-
-// Assuming ARGB32 (little endian) which means BGRA byte order.
-// Source: https://en.wikipedia.org/wiki/RGBA_color_model#ARGB32
-static int	put_pixel(t_image *img, int x_pos, int y_pos, int color)
-{
-	char	*pixel;
-	int		bytes_per_line;
-	int		bytes_per_pixel;
-
-	bytes_per_line = img->bytes_per_line;
-	bytes_per_pixel = img->bits_per_pixel / 8;
-	pixel = img->addr + y_pos * bytes_per_line + x_pos * bytes_per_pixel;
-	if (bytes_per_pixel == sizeof(unsigned int))
-	{
-		*(unsigned int *)pixel = color;
-	}
-	return (0);
-}
-
-static int	draw_rect(t_image *img, int x_pos, int y_pos, int width, int height, int color)
-{
-	for (int y = y_pos; y < y_pos + height; y++)
-	{
-		for (int x = x_pos; x < x_pos + width; x++)
-		{
-			put_pixel(img, x, y, color);
-		}
-	}
 	return (0);
 }
 
@@ -107,12 +60,54 @@ static int	init_map(t_map *map)
 
 static int	init_player(t_player *player)
 {
-	player->x_pos = 26;
-	player->y_pos = 11;
-	player->width = 10;
+	player->x_pos = 26 + 0.5;
+	player->y_pos = 11 + 0.5;
+	player->width = CELL_WIDTH / 2;
 	return (0);
 }
 
+static int	destroy_game(t_game *game)
+{
+	mlx_destroy_image(game->mlx_ctx, game->win.frame.img_ctx);
+	mlx_destroy_window(game->mlx_ctx, game->win.win_ctx);
+	mlx_destroy_display(game->mlx_ctx);
+	free(game->mlx_ctx);
+	return (0);
+}
+
+// Assuming ARGB32 (little endian) which means BGRA byte order.
+// Source: https://en.wikipedia.org/wiki/RGBA_color_model#ARGB32
+static int	put_pixel(t_image *img, int x_pos, int y_pos, int color)
+{
+	char	*pixel;
+	int		bytes_per_line;
+	int		bytes_per_pixel;
+
+	if (x_pos < 0 || x_pos >= img->width || y_pos < 0 || y_pos >= img->height)
+	{
+		return (-1);
+	}
+	bytes_per_line = img->bytes_per_line;
+	bytes_per_pixel = img->bits_per_pixel / 8;
+	pixel = img->addr + y_pos * bytes_per_line + x_pos * bytes_per_pixel;
+	if (bytes_per_pixel == sizeof(unsigned int))
+	{
+		*(unsigned int *)pixel = color;
+	}
+	return (0);
+}
+
+static int	draw_rect(t_image *img, int x_pos, int y_pos, int width, int height, int color)
+{
+	for (int y = y_pos; y < y_pos + height; y++)
+	{
+		for (int x = x_pos; x < x_pos + width; x++)
+		{
+			put_pixel(img, x, y, color);
+		}
+	}
+	return (0);
+}
 static int	draw_map(t_image *frame, t_map *map)
 {
 	for (int y = 0; y < map->height; y++)
@@ -127,7 +122,7 @@ static int	draw_map(t_image *frame, t_map *map)
 			{
 				draw_rect(frame, x * CELL_WIDTH, y * CELL_WIDTH, CELL_WIDTH, CELL_WIDTH, 0x808080);
 			}
-			else if (map->grid[y][x] == '0')
+			else
 			{
 				draw_rect(frame, x * CELL_WIDTH, y * CELL_WIDTH, CELL_WIDTH, CELL_WIDTH, 0x000000);
 			}
@@ -142,6 +137,49 @@ static int	draw_player(t_image *frame, t_player *player)
 	return (0);
 }
 
+static int	key_press_hook(int keysym, void *param)
+{
+	t_game	*game;
+	float	move_speed;
+
+	game = (t_game *)param;
+	move_speed = 0.25f;
+	if (keysym == XK_Up)
+	{
+		game->player.y_pos -= move_speed;
+	}
+	else if (keysym == XK_Down)
+	{
+		game->player.y_pos += move_speed;
+	}
+	else if (keysym == XK_Left)
+	{
+		game->player.x_pos -= move_speed;
+	}
+	else if (keysym == XK_Right)
+	{
+		game->player.x_pos += move_speed;
+	}
+	else
+	{
+		printf("Pressed %d\n", keysym);
+	}
+	draw_map(&game->win.frame, &game->map);
+	draw_player(&game->win.frame, &game->player);
+	mlx_put_image_to_window(game->mlx_ctx, game->win.win_ctx, game->win.frame.img_ctx, 0, 0);
+	return (0);
+}
+
+static int	key_release_hook(int keysym, void *mlx_ctx)
+{
+	if (keysym == XK_Escape)
+	{
+		mlx_loop_end(mlx_ctx);
+	}
+	return (0);
+}
+
+
 int	main(int argc, char *argv[])
 {
 	t_game	game;
@@ -152,6 +190,7 @@ int	main(int argc, char *argv[])
 	init_map(&game.map);
 	init_player(&game.player);
 	mlx_hook(game.win.win_ctx, DestroyNotify, 0, mlx_loop_end, game.mlx_ctx);
+	mlx_hook(game.win.win_ctx, KeyPress, KeyPressMask, key_press_hook, &game);
 	mlx_key_hook(game.win.win_ctx, key_release_hook, game.mlx_ctx);
 	draw_map(&game.win.frame, &game.map);
 	draw_player(&game.win.frame, &game.player);

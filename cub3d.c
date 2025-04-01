@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 13:54:53 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/01 17:40:59 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/01 18:14:01 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ static const char	*g_testmap[] = {
 	"11000000110101011100000010001    ",
 	"10000000000000001100000010001    ",
 	"10000000000000001101010010001    ",
-	"11000001110101011111011110N0111  ",
-	"11110111 1110101 101111010001    ",
+	"1100000111010101111101111000111  ",
+	"1111N111 1110101 101111010001    ",
 	"11111111 1111111 111111111111    ",
 };
 
@@ -60,8 +60,8 @@ static int	init_map(t_map *map)
 
 static int	init_player(t_player *player)
 {
-	player->x_pos = 26 + 0.5;
-	player->y_pos = 11 + 0.5;
+	player->x_pos = 4 + 0.25;
+	player->y_pos = 12 + 0.25;
 	player->width = CELL_WIDTH / 2;
 	return (0);
 }
@@ -137,33 +137,53 @@ static int	draw_player(t_image *frame, t_player *player)
 	return (0);
 }
 
+static bool	is_arrow_key(int keysym)
+{
+	return (keysym == XK_Up || keysym == XK_Down || keysym == XK_Left || keysym == XK_Right);
+}
+
+static bool	is_wall(t_map *map, float x, float y)
+{
+	return (map->grid[(int)y][(int)x] == '1');
+}
+
 static int	key_press_hook(int keysym, void *param)
 {
 	t_game	*game;
 	float	move_speed;
+	float	new_x;
+	float	new_y;
 
+	if (!is_arrow_key(keysym))
+	{
+		return (-1);
+	}
 	game = (t_game *)param;
 	move_speed = 0.25f;
+	new_x = game->player.x_pos;
+	new_y = game->player.y_pos;
 	if (keysym == XK_Up)
 	{
-		game->player.y_pos -= move_speed;
+		new_y -= move_speed;
 	}
 	else if (keysym == XK_Down)
 	{
-		game->player.y_pos += move_speed;
+		new_y += move_speed;
 	}
 	else if (keysym == XK_Left)
 	{
-		game->player.x_pos -= move_speed;
+		new_x -= move_speed;
 	}
 	else if (keysym == XK_Right)
 	{
-		game->player.x_pos += move_speed;
+		new_x += move_speed;
 	}
-	else
+	if (is_wall(&game->map, new_x, new_y))
 	{
-		printf("Pressed %d\n", keysym);
+		return (-1);
 	}
+	game->player.x_pos = new_x;
+	game->player.y_pos = new_y;
 	draw_map(&game->win.frame, &game->map);
 	draw_player(&game->win.frame, &game->player);
 	mlx_put_image_to_window(game->mlx_ctx, game->win.win_ctx, game->win.frame.img_ctx, 0, 0);

@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 21:13:52 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/01 16:28:32 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/01 18:00:02 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # define WIN_HEIGHT 800
 # define CELL_WIDTH 32
 
+# include <stdbool.h>
 # include <X11/keysym.h>
 # include <X11/X.h>
 

@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 13:54:53 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/01 20:13:07 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/02 01:45:51 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,19 +160,19 @@ static bool	is_wall(t_map *map, float x, float y)
 	return (map->grid[(int)y][(int)x] == '1');
 }
 
+// This is so hacky
 static int	key_press_hook(int keysym, void *param)
 {
 	t_game	*game;
 	float	move_speed;
+	float	epsilon;
 	float	new_x;
 	float	new_y;
+	float	box[4][2];
 
-	if (!is_arrow_key(keysym) && !is_wasd_key(keysym))
-	{
-		return (-1);
-	}
 	game = (t_game *)param;
-	move_speed = 0.25f;
+	move_speed = 0.25;
+	epsilon = 0.001f;
 	new_x = game->player.x_pos;
 	new_y = game->player.y_pos;
 	if (keysym == XK_Up || keysym == XK_w)
@@ -191,17 +191,28 @@ static int	key_press_hook(int keysym, void *param)
 	{
 		new_x += move_speed;
 	}
-	if ((keysym == XK_Down || keysym == XK_s) && is_wall(&game->map, new_x, new_y + 0.25f))
+	else
 	{
 		return (-1);
 	}
-	else if ((keysym == XK_Right || keysym == XK_d) && is_wall(&game->map, new_x + 0.25f, new_y))
+	box[0][0] = new_x;
+	box[0][1] = new_y;
+	box[1][0] = new_x + 0.5f - epsilon;
+	box[1][1] = new_y;
+	box[2][0] = new_x + 0.5f - epsilon;
+	box[2][1] = new_y + 0.5f - epsilon;
+	box[3][0] = new_x;
+	box[3][1] = new_y + 0.5f - epsilon;
+	printf("0: x: %f y: %f\n", box[0][0], box[0][1]);
+	printf("1: x: %f y: %f\n", box[1][0], box[1][1]);
+	printf("2: x: %f y: %f\n", box[2][0], box[2][1]);
+	printf("3: x: %f y: %f\n", box[3][0], box[3][1]);
+	for (int i = 0; i < 4; i++)
 	{
-		return (-1);
-	}
-	else if (is_wall(&game->map, new_x, new_y))
-	{
-		return (-1);
+		if (is_wall(&game->map, box[i][0], box[i][1]))
+		{
+			return (-1);
+		}
 	}
 	game->player.x_pos = new_x;
 	game->player.y_pos = new_y;

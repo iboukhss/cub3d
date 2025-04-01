@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 13:54:53 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/01 18:14:01 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/01 18:59:27 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ static int	draw_map(t_image *frame, t_map *map)
 {
 	for (int y = 0; y < map->height; y++)
 	{
-		for (int x = 0; x < map->width; x++)
+		for (int x = 0; map->grid[y][x] && x < map->width; x++)
 		{
 			if (map->grid[y][x] == '1')
 			{
@@ -137,9 +137,22 @@ static int	draw_player(t_image *frame, t_player *player)
 	return (0);
 }
 
+static int	redraw_frame(t_game *game)
+{
+	draw_map(&game->win.frame, &game->map);
+	draw_player(&game->win.frame, &game->player);
+	mlx_put_image_to_window(game->mlx_ctx, game->win.win_ctx, game->win.frame.img_ctx, 0, 0);
+	return (0);
+}
+
 static bool	is_arrow_key(int keysym)
 {
 	return (keysym == XK_Up || keysym == XK_Down || keysym == XK_Left || keysym == XK_Right);
+}
+
+static bool	is_wasd_key(int keysym)
+{
+	return (keysym == XK_w || keysym == XK_a || keysym == XK_s || keysym == XK_d);
 }
 
 static bool	is_wall(t_map *map, float x, float y)
@@ -154,7 +167,7 @@ static int	key_press_hook(int keysym, void *param)
 	float	new_x;
 	float	new_y;
 
-	if (!is_arrow_key(keysym))
+	if (!is_arrow_key(keysym) && !is_wasd_key(keysym))
 	{
 		return (-1);
 	}
@@ -162,19 +175,19 @@ static int	key_press_hook(int keysym, void *param)
 	move_speed = 0.25f;
 	new_x = game->player.x_pos;
 	new_y = game->player.y_pos;
-	if (keysym == XK_Up)
+	if (keysym == XK_Up || keysym == XK_w)
 	{
 		new_y -= move_speed;
 	}
-	else if (keysym == XK_Down)
+	else if (keysym == XK_Down || keysym == XK_s)
 	{
 		new_y += move_speed;
 	}
-	else if (keysym == XK_Left)
+	else if (keysym == XK_Left || keysym == XK_a)
 	{
 		new_x -= move_speed;
 	}
-	else if (keysym == XK_Right)
+	else if (keysym == XK_Right || keysym == XK_d)
 	{
 		new_x += move_speed;
 	}
@@ -184,9 +197,7 @@ static int	key_press_hook(int keysym, void *param)
 	}
 	game->player.x_pos = new_x;
 	game->player.y_pos = new_y;
-	draw_map(&game->win.frame, &game->map);
-	draw_player(&game->win.frame, &game->player);
-	mlx_put_image_to_window(game->mlx_ctx, game->win.win_ctx, game->win.frame.img_ctx, 0, 0);
+	redraw_frame(game);
 	return (0);
 }
 
@@ -198,7 +209,6 @@ static int	key_release_hook(int keysym, void *mlx_ctx)
 	}
 	return (0);
 }
-
 
 int	main(int argc, char *argv[])
 {
@@ -212,9 +222,7 @@ int	main(int argc, char *argv[])
 	mlx_hook(game.win.win_ctx, DestroyNotify, 0, mlx_loop_end, game.mlx_ctx);
 	mlx_hook(game.win.win_ctx, KeyPress, KeyPressMask, key_press_hook, &game);
 	mlx_key_hook(game.win.win_ctx, key_release_hook, game.mlx_ctx);
-	draw_map(&game.win.frame, &game.map);
-	draw_player(&game.win.frame, &game.player);
-	mlx_put_image_to_window(game.mlx_ctx, game.win.win_ctx, game.win.frame.img_ctx, 0, 0);
+	redraw_frame(&game);
 	mlx_loop(game.mlx_ctx);
 	destroy_game(&game);
 	return (0);

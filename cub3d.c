@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 13:54:53 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/01 18:59:27 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/01 20:13:07 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,7 +191,15 @@ static int	key_press_hook(int keysym, void *param)
 	{
 		new_x += move_speed;
 	}
-	if (is_wall(&game->map, new_x, new_y))
+	if ((keysym == XK_Down || keysym == XK_s) && is_wall(&game->map, new_x, new_y + 0.25f))
+	{
+		return (-1);
+	}
+	else if ((keysym == XK_Right || keysym == XK_d) && is_wall(&game->map, new_x + 0.25f, new_y))
+	{
+		return (-1);
+	}
+	else if (is_wall(&game->map, new_x, new_y))
 	{
 		return (-1);
 	}
@@ -210,6 +218,15 @@ static int	key_release_hook(int keysym, void *mlx_ctx)
 	return (0);
 }
 
+static int	expose_hook(void *param)
+{
+	t_game	*game;
+
+	game = (t_game *)param;
+	redraw_frame(game);
+	return (0);
+}
+
 int	main(int argc, char *argv[])
 {
 	t_game	game;
@@ -222,6 +239,7 @@ int	main(int argc, char *argv[])
 	mlx_hook(game.win.win_ctx, DestroyNotify, 0, mlx_loop_end, game.mlx_ctx);
 	mlx_hook(game.win.win_ctx, KeyPress, KeyPressMask, key_press_hook, &game);
 	mlx_key_hook(game.win.win_ctx, key_release_hook, game.mlx_ctx);
+	mlx_expose_hook(game.win.win_ctx, expose_hook, &game);
 	redraw_frame(&game);
 	mlx_loop(game.mlx_ctx);
 	destroy_game(&game);

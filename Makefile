@@ -1,11 +1,8 @@
 NAME = cub3d
+BUILD ?= debug
 
-CC = cc
-RM = rm -f
-
-MAKEFLAGS += --no-print-directory
-
-MLX_DIR = minilibx-linux
+MLXDIR = minilibx-linux
+LIBMLX = $(MLXDIR)/libmlx.a
 
 SRCS = cub3d.c
 HDRS = cub3d.h
@@ -13,24 +10,45 @@ HDRS = cub3d.h
 OBJS = $(SRCS:.c=.o)
 DEPS = $(OBJS:.o=.d)
 
-CFLAGS += -Wall -Wextra -Werror
-CPPFLAGS = -I$(MLX_DIR)
-LDFLAGS = -L$(MLX_DIR)
+# https://www.gnu.org/software/make/manual/html_node/Implicit-Variables.html
+CC = cc
+RM = rm -f
+CPPFLAGS = -I$(MLXDIR)
+CFLAGS = -Wall -Wextra
+LDFLAGS = -L$(MLXDIR)
 LDLIBS = -lmlx -lXext -lX11 -lm
+
+ifeq ($(BUILD),release)
+	CFLAGS += -Werror
+else ifeq ($(BUILD),debug)
+	CFLAGS += -g3
+else ifeq ($(BUILD),asan)
+	CFLAGS += -ggdb3 -fsanitize=address,undefined
+	LDLIBS += -lasan -lubsan
+endif
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+$(NAME): $(LIBMLX) $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS)
+
+$(LIBMLX): $(MLXDIR)/.git
+	$(MAKE) -C $(MLXDIR)
+
+$(MLXDIR)/.git:
+	git submodule update --init --recursive
 
 %.o: %.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c -o $@ $<
+
+-include $(DEPS)
 
 clean:
-	$(RM) $(OBJS)
+	$(RM) $(OBJS) $(DEPS)
 
 fclean: clean
 	$(RM) $(NAME)
+	$(MAKE) -C $(MLXDIR) clean
 
 re:
 	$(MAKE) fclean

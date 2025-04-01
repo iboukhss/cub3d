@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 21:13:52 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/03/31 01:08:38 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/01 13:42:03 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # define WIN_WIDTH 1280
 # define WIN_HEIGHT 800
+# define CELL_WIDTH 32
 
 # include <X11/keysym.h>
 # include <X11/X.h>
@@ -41,12 +42,19 @@ typedef struct s_window
 
 typedef struct s_map
 {
-	// Add map data here
+	char	**grid;
+	int		width;
+	int		height;
+	int		cell_width;
+	int		stroke_width;
 }	t_map;
 
 typedef struct s_player
 {
-	// Add player data here
+	int	x_pos;
+	int	y_pos;
+	int	fov;
+	int	width;
 }	t_player;
 
 typedef struct s_config

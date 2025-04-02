@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 21:13:52 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/01 18:00:02 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/02 17:10:11 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,14 @@
 # include <stdbool.h>
 # include <X11/keysym.h>
 # include <X11/X.h>
+
+typedef struct s_rect
+{
+	int	x;
+	int	y;
+	int	w;
+	int	h;
+}	t_rect;
 
 typedef struct s_image
 {

@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 13:54:53 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/02 01:45:51 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/02 17:42:27 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,15 @@ static int	init_game(t_game *game)
 	game->win.frame.height = game->win.height;
 	game->win.frame.img_ctx = mlx_new_image(game->mlx_ctx, game->win.frame.width, game->win.frame.height);
 	game->win.frame.addr = mlx_get_data_addr(game->win.frame.img_ctx, &game->win.frame.bits_per_pixel, &game->win.frame.bytes_per_line, &game->win.frame.endian);
+	return (0);
+}
+
+static int	destroy_game(t_game *game)
+{
+	mlx_destroy_image(game->mlx_ctx, game->win.frame.img_ctx);
+	mlx_destroy_window(game->mlx_ctx, game->win.win_ctx);
+	mlx_destroy_display(game->mlx_ctx);
+	free(game->mlx_ctx);
 	return (0);
 }
 
@@ -66,15 +75,6 @@ static int	init_player(t_player *player)
 	return (0);
 }
 
-static int	destroy_game(t_game *game)
-{
-	mlx_destroy_image(game->mlx_ctx, game->win.frame.img_ctx);
-	mlx_destroy_window(game->mlx_ctx, game->win.win_ctx);
-	mlx_destroy_display(game->mlx_ctx);
-	free(game->mlx_ctx);
-	return (0);
-}
-
 // Assuming ARGB32 (little endian) which means BGRA byte order.
 // Source: https://en.wikipedia.org/wiki/RGBA_color_model#ARGB32
 static int	put_pixel(t_image *img, int x_pos, int y_pos, int color)
@@ -97,34 +97,41 @@ static int	put_pixel(t_image *img, int x_pos, int y_pos, int color)
 	return (0);
 }
 
-static int	draw_rect(t_image *img, int x_pos, int y_pos, int width, int height, int color)
+static int	fill_rect(t_image *img, t_rect *rect, int color)
 {
-	for (int y = y_pos; y < y_pos + height; y++)
+	for (int y = rect->y; y < rect->y + rect->h; y++)
 	{
-		for (int x = x_pos; x < x_pos + width; x++)
+		for (int x = rect->x; x < rect->x + rect->w; x++)
 		{
 			put_pixel(img, x, y, color);
 		}
 	}
 	return (0);
 }
+
 static int	draw_map(t_image *frame, t_map *map)
 {
+	t_rect	cell;
+
 	for (int y = 0; y < map->height; y++)
 	{
 		for (int x = 0; map->grid[y][x] && x < map->width; x++)
 		{
+			cell.x = x * CELL_WIDTH;
+			cell.y = y * CELL_WIDTH;
+			cell.w = CELL_WIDTH;
+			cell.h = CELL_WIDTH;
 			if (map->grid[y][x] == '1')
 			{
-				draw_rect(frame, x * CELL_WIDTH, y * CELL_WIDTH, CELL_WIDTH, CELL_WIDTH, 0xFFFFFF);
+				fill_rect(frame, &cell, 0xFFFFFF);
 			}
 			else if (map->grid[y][x] == ' ')
 			{
-				draw_rect(frame, x * CELL_WIDTH, y * CELL_WIDTH, CELL_WIDTH, CELL_WIDTH, 0x808080);
+				fill_rect(frame, &cell, 0x808080);
 			}
 			else
 			{
-				draw_rect(frame, x * CELL_WIDTH, y * CELL_WIDTH, CELL_WIDTH, CELL_WIDTH, 0x000000);
+				fill_rect(frame, &cell, 0x000000);
 			}
 		}
 	}
@@ -133,7 +140,13 @@ static int	draw_map(t_image *frame, t_map *map)
 
 static int	draw_player(t_image *frame, t_player *player)
 {
-	draw_rect(frame, player->x_pos * CELL_WIDTH, player->y_pos * CELL_WIDTH, player->width, player->width, 0xFF0000);
+	t_rect	hitbox;
+
+	hitbox.x = player->x_pos * CELL_WIDTH;
+	hitbox.y = player->y_pos * CELL_WIDTH;
+	hitbox.w = player->width;
+	hitbox.h = player->width;
+	fill_rect(frame, &hitbox, 0xFF0000);
 	return (0);
 }
 

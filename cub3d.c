@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 13:54:53 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/04 14:20:04 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/04 15:41:39 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,11 +72,16 @@ static int	init_player(t_player *player)
 {
 	player->cx = 4.5;
 	player->cy = 12.5;
-	player->radius = 0.25;
 	player->angle_deg = 90;
-	player->angle_rad = player->angle_deg * (M_PI / 180);
+	player->fov_deg = 60;
+	player->radius = 0.25;
+	player->angle_rad = player->angle_deg * (M_PI / 180.0);
 	player->dx = -cos(player->angle_rad);
 	player->dy = -sin(player->angle_rad);
+	player->ldx = -cos((player->angle_deg - player->fov_deg / 2.0) * (M_PI / 180.0));
+	player->ldy = -sin((player->angle_deg - player->fov_deg / 2.0) * (M_PI / 180.0));
+	player->rdx = -cos((player->angle_deg + player->fov_deg / 2.0) * (M_PI / 180.0));
+	player->rdy = -sin((player->angle_deg + player->fov_deg / 2.0) * (M_PI / 180.0));
 	return (0);
 }
 
@@ -167,18 +172,33 @@ static int	draw_map(t_image *frame, t_map *map)
 static int	draw_player(t_image *frame, t_player *player)
 {
 	t_rect	bound_box;
-	t_line	dir_vec;
+	t_line	mid_vec;
+	t_line	min_vec;
+	t_line	max_vec;
+
+	int		center_x = player->cx * CELL_WIDTH;
+	int		center_y = player->cy * CELL_WIDTH;
 
 	bound_box.x = (player->cx - player->radius) * CELL_WIDTH;
 	bound_box.y = (player->cy - player->radius) * CELL_WIDTH;
 	bound_box.w = (player->radius * 2) * CELL_WIDTH;
 	bound_box.h = (player->radius * 2) * CELL_WIDTH;
-	dir_vec.x0 = player->cx * CELL_WIDTH;
-	dir_vec.y0 = player->cy * CELL_WIDTH;
-	dir_vec.x1 = dir_vec.x0 + player->dx * (1.5 * CELL_WIDTH);
-	dir_vec.y1 = dir_vec.y0 + player->dy * (1.5 * CELL_WIDTH);
+	mid_vec.x0 = center_x;
+	mid_vec.y0 = center_y;
+	mid_vec.x1 = center_x + player->dx * (4 * CELL_WIDTH);
+	mid_vec.y1 = center_y + player->dy * (4 * CELL_WIDTH);
+	min_vec.x0 = center_x;
+	min_vec.y0 = center_y;
+	min_vec.x1 = center_x + player->ldx * (4 * CELL_WIDTH);
+	min_vec.y1 = center_y + player->ldy * (4 * CELL_WIDTH);
+	max_vec.x0 = center_x;
+	max_vec.y0 = center_y;
+	max_vec.x1 = center_x + player->rdx * (4 * CELL_WIDTH);
+	max_vec.y1 = center_y + player->rdy * (4 * CELL_WIDTH);
 	fill_rect(frame, &bound_box, 0xFF00FF);
-	draw_line(frame, &dir_vec, 0xFFFF00);
+	draw_line(frame, &mid_vec, 0xFFFF00);
+	draw_line(frame, &min_vec, 0x00FFFF);
+	draw_line(frame, &max_vec, 0x00FFFF);
 	return (0);
 }
 
@@ -213,6 +233,10 @@ static int	key_press_hook(int keysym, void *param)
 		game->player.angle_rad = game->player.angle_deg * (M_PI / 180);
 		game->player.dx = -cos(game->player.angle_rad);
 		game->player.dy = -sin(game->player.angle_rad);
+		game->player.ldx = -cos((game->player.angle_deg - game->player.fov_deg / 2.0) * (M_PI / 180.0));
+		game->player.ldy = -sin((game->player.angle_deg - game->player.fov_deg / 2.0) * (M_PI / 180.0));
+		game->player.rdx = -cos((game->player.angle_deg + game->player.fov_deg / 2.0) * (M_PI / 180.0));
+		game->player.rdy = -sin((game->player.angle_deg + game->player.fov_deg / 2.0) * (M_PI / 180.0));
 	}
 	else if (keysym == XK_Right)
 	{
@@ -220,6 +244,10 @@ static int	key_press_hook(int keysym, void *param)
 		game->player.angle_rad = game->player.angle_deg * (M_PI / 180);
 		game->player.dx = -cos(game->player.angle_rad);
 		game->player.dy = -sin(game->player.angle_rad);
+		game->player.ldx = -cos((game->player.angle_deg - game->player.fov_deg / 2.0) * (M_PI / 180.0));
+		game->player.ldy = -sin((game->player.angle_deg - game->player.fov_deg / 2.0) * (M_PI / 180.0));
+		game->player.rdx = -cos((game->player.angle_deg + game->player.fov_deg / 2.0) * (M_PI / 180.0));
+		game->player.rdy = -sin((game->player.angle_deg + game->player.fov_deg / 2.0) * (M_PI / 180.0));
 	}
 	printf("X  : %f\n", game->player.cx);
 	printf("Y  : %f\n", game->player.cy);

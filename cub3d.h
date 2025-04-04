@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 21:13:52 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/04 03:01:59 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/04 15:00:36 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,11 @@ typedef struct s_player
 	float	dy;
 	int		angle_deg;
 	float	angle_rad;
-	float	fov;
+	int		fov_deg;
+	float	ldx;
+	float	ldy;
+	float	rdx;
+	float	rdy;
 }	t_player;
 
 typedef struct s_config

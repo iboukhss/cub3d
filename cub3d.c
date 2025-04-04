@@ -6,13 +6,14 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 13:54:53 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/02 17:42:27 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/04 14:20:04 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+#include "mlx.h"
 
-#include <mlx.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -69,9 +70,13 @@ static int	init_map(t_map *map)
 
 static int	init_player(t_player *player)
 {
-	player->x_pos = 4 + 0.25;
-	player->y_pos = 12 + 0.25;
-	player->width = CELL_WIDTH / 2;
+	player->cx = 4.5;
+	player->cy = 12.5;
+	player->radius = 0.25;
+	player->angle_deg = 90;
+	player->angle_rad = player->angle_deg * (M_PI / 180);
+	player->dx = -cos(player->angle_rad);
+	player->dy = -sin(player->angle_rad);
 	return (0);
 }
 
@@ -93,6 +98,27 @@ static int	put_pixel(t_image *img, int x_pos, int y_pos, int color)
 	if (bytes_per_pixel == sizeof(unsigned int))
 	{
 		*(unsigned int *)pixel = color;
+	}
+	return (0);
+}
+
+static int	draw_line(t_image *img, t_line *line, int color)
+{
+	float	dx = line->x1 - line->x0;
+	float	dy = line->y1 - line->y0;
+	int		steps = fabsf(dx) > fabsf(dy) ? fabsf(dx) : fabsf(dy);
+
+	float	x_inc = dx / steps;
+	float	y_inc = dy / steps;
+
+	float	x = line->x0;
+	float	y = line->y0;
+
+	for (int i = 0; i <= steps; i++)
+	{
+		put_pixel(img, roundf(x), roundf(y), color);
+		x += x_inc;
+		y += y_inc;
 	}
 	return (0);
 }
@@ -140,13 +166,19 @@ static int	draw_map(t_image *frame, t_map *map)
 
 static int	draw_player(t_image *frame, t_player *player)
 {
-	t_rect	hitbox;
+	t_rect	bound_box;
+	t_line	dir_vec;
 
-	hitbox.x = player->x_pos * CELL_WIDTH;
-	hitbox.y = player->y_pos * CELL_WIDTH;
-	hitbox.w = player->width;
-	hitbox.h = player->width;
-	fill_rect(frame, &hitbox, 0xFF0000);
+	bound_box.x = (player->cx - player->radius) * CELL_WIDTH;
+	bound_box.y = (player->cy - player->radius) * CELL_WIDTH;
+	bound_box.w = (player->radius * 2) * CELL_WIDTH;
+	bound_box.h = (player->radius * 2) * CELL_WIDTH;
+	dir_vec.x0 = player->cx * CELL_WIDTH;
+	dir_vec.y0 = player->cy * CELL_WIDTH;
+	dir_vec.x1 = dir_vec.x0 + player->dx * (1.5 * CELL_WIDTH);
+	dir_vec.y1 = dir_vec.y0 + player->dy * (1.5 * CELL_WIDTH);
+	fill_rect(frame, &bound_box, 0xFF00FF);
+	draw_line(frame, &dir_vec, 0xFFFF00);
 	return (0);
 }
 
@@ -158,77 +190,44 @@ static int	redraw_frame(t_game *game)
 	return (0);
 }
 
-static bool	is_arrow_key(int keysym)
-{
-	return (keysym == XK_Up || keysym == XK_Down || keysym == XK_Left || keysym == XK_Right);
-}
-
-static bool	is_wasd_key(int keysym)
-{
-	return (keysym == XK_w || keysym == XK_a || keysym == XK_s || keysym == XK_d);
-}
-
-static bool	is_wall(t_map *map, float x, float y)
-{
-	return (map->grid[(int)y][(int)x] == '1');
-}
-
-// This is so hacky
 static int	key_press_hook(int keysym, void *param)
 {
 	t_game	*game;
 	float	move_speed;
-	float	epsilon;
-	float	new_x;
-	float	new_y;
-	float	box[4][2];
 
 	game = (t_game *)param;
 	move_speed = 0.25;
-	epsilon = 0.001f;
-	new_x = game->player.x_pos;
-	new_y = game->player.y_pos;
-	if (keysym == XK_Up || keysym == XK_w)
+	if (keysym == XK_Up)
 	{
-		new_y -= move_speed;
+		game->player.cx += game->player.dx * move_speed;
+		game->player.cy += game->player.dy * move_speed;
 	}
-	else if (keysym == XK_Down || keysym == XK_s)
+	else if (keysym == XK_Down)
 	{
-		new_y += move_speed;
+		game->player.cx -= game->player.dx * move_speed;
+		game->player.cy -= game->player.dy * move_speed;
 	}
-	else if (keysym == XK_Left || keysym == XK_a)
+	else if (keysym == XK_Left)
 	{
-		new_x -= move_speed;
+		game->player.angle_deg = (game->player.angle_deg - 15) % 360;
+		game->player.angle_rad = game->player.angle_deg * (M_PI / 180);
+		game->player.dx = -cos(game->player.angle_rad);
+		game->player.dy = -sin(game->player.angle_rad);
 	}
-	else if (keysym == XK_Right || keysym == XK_d)
+	else if (keysym == XK_Right)
 	{
-		new_x += move_speed;
+		game->player.angle_deg = (game->player.angle_deg + 15) % 360;
+		game->player.angle_rad = game->player.angle_deg * (M_PI / 180);
+		game->player.dx = -cos(game->player.angle_rad);
+		game->player.dy = -sin(game->player.angle_rad);
 	}
-	else
-	{
-		return (-1);
-	}
-	box[0][0] = new_x;
-	box[0][1] = new_y;
-	box[1][0] = new_x + 0.5f - epsilon;
-	box[1][1] = new_y;
-	box[2][0] = new_x + 0.5f - epsilon;
-	box[2][1] = new_y + 0.5f - epsilon;
-	box[3][0] = new_x;
-	box[3][1] = new_y + 0.5f - epsilon;
-	printf("0: x: %f y: %f\n", box[0][0], box[0][1]);
-	printf("1: x: %f y: %f\n", box[1][0], box[1][1]);
-	printf("2: x: %f y: %f\n", box[2][0], box[2][1]);
-	printf("3: x: %f y: %f\n", box[3][0], box[3][1]);
-	for (int i = 0; i < 4; i++)
-	{
-		if (is_wall(&game->map, box[i][0], box[i][1]))
-		{
-			return (-1);
-		}
-	}
-	game->player.x_pos = new_x;
-	game->player.y_pos = new_y;
+	printf("X  : %f\n", game->player.cx);
+	printf("Y  : %f\n", game->player.cy);
+	printf("Dx : %f\n", game->player.dx);
+	printf("Dy : %f\n", game->player.dy);
+	printf("Deg: %d\n", game->player.angle_deg);
+	printf("Rad: %f\n", game->player.angle_rad);
+	printf("------------------\n");
 	redraw_frame(game);
 	return (0);
 }

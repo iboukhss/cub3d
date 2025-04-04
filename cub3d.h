@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 21:13:52 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/02 17:10:11 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/04 03:01:59 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,21 @@
 # include <stdbool.h>
 # include <X11/keysym.h>
 # include <X11/X.h>
+
+typedef struct s_line
+{
+	int	x0;
+	int	y0;
+	int	x1;
+	int	y1;
+}	t_line;
+
+typedef struct s_circle
+{
+	int	x;
+	int	y;
+	int	r;
+}	t_circle;
 
 typedef struct s_rect
 {
@@ -60,10 +75,14 @@ typedef struct s_map
 
 typedef struct s_player
 {
-	float	x_pos;
-	float	y_pos;
-	int		fov;
-	int		width;
+	float	cx;
+	float	cy;
+	float	radius;
+	float	dx;
+	float	dy;
+	int		angle_deg;
+	float	angle_rad;
+	float	fov;
 }	t_player;
 
 typedef struct s_config

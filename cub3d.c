@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 13:54:53 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/04 15:41:39 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/04 16:54:11 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,6 @@ static int	init_map(t_map *map)
 	map->grid = (char **)g_testmap;
 	map->width = 33;
 	map->height = 14;
-	map->cell_width = CELL_WIDTH;
-	map->stroke_width = 2;
 	return (0);
 }
 
@@ -107,6 +105,7 @@ static int	put_pixel(t_image *img, int x_pos, int y_pos, int color)
 	return (0);
 }
 
+// Using DDA to draw lines.
 static int	draw_line(t_image *img, t_line *line, int color)
 {
 	float	dx = line->x1 - line->x0;
@@ -169,6 +168,8 @@ static int	draw_map(t_image *frame, t_map *map)
 	return (0);
 }
 
+// Draws the player's square position and 3 direction vectors
+// representing the field of view.
 static int	draw_player(t_image *frame, t_player *player)
 {
 	t_rect	bound_box;
@@ -210,6 +211,7 @@ static int	redraw_frame(t_game *game)
 	return (0);
 }
 
+// NOTE(ismail): Very messy right now. Needs better refactoring.
 static int	key_press_hook(int keysym, void *param)
 {
 	t_game	*game;

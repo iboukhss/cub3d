@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 13:54:53 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/04 16:54:11 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/05 16:35:19 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,30 +17,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static int	init_game(t_game *game)
+static double	rad(double deg)
 {
-	game->mlx_ctx = mlx_init();
-	game->win.width = WIN_WIDTH;
-	game->win.height = WIN_HEIGHT;
-	game->win.title = "cub3D";
-	game->win.win_ctx = mlx_new_window(game->mlx_ctx, game->win.width, game->win.height, game->win.title);
-	game->win.frame.width = game->win.width;
-	game->win.frame.height = game->win.height;
-	game->win.frame.img_ctx = mlx_new_image(game->mlx_ctx, game->win.frame.width, game->win.frame.height);
-	game->win.frame.addr = mlx_get_data_addr(game->win.frame.img_ctx, &game->win.frame.bits_per_pixel, &game->win.frame.bytes_per_line, &game->win.frame.endian);
-	return (0);
+	return (deg * (M_PI / 180.0));
 }
 
-static int	destroy_game(t_game *game)
-{
-	mlx_destroy_image(game->mlx_ctx, game->win.frame.img_ctx);
-	mlx_destroy_window(game->mlx_ctx, game->win.win_ctx);
-	mlx_destroy_display(game->mlx_ctx);
-	free(game->mlx_ctx);
-	return (0);
-}
-
-// Hardcoded stubs
 static const char	*g_testmap[] = {
 	"        1111111111111111111111111",
 	"        1000000000110000000000001",
@@ -73,13 +54,60 @@ static int	init_player(t_player *player)
 	player->angle_deg = 90;
 	player->fov_deg = 60;
 	player->radius = 0.25;
-	player->angle_rad = player->angle_deg * (M_PI / 180.0);
-	player->dx = -cos(player->angle_rad);
+	player->angle_rad = rad(player->angle_deg);
+	player->dx = cos(player->angle_rad);
 	player->dy = -sin(player->angle_rad);
-	player->ldx = -cos((player->angle_deg - player->fov_deg / 2.0) * (M_PI / 180.0));
-	player->ldy = -sin((player->angle_deg - player->fov_deg / 2.0) * (M_PI / 180.0));
-	player->rdx = -cos((player->angle_deg + player->fov_deg / 2.0) * (M_PI / 180.0));
-	player->rdy = -sin((player->angle_deg + player->fov_deg / 2.0) * (M_PI / 180.0));
+	player->ldx = cos(rad(player->angle_deg + player->fov_deg / 2.0));
+	player->ldy = -sin(rad(player->angle_deg + player->fov_deg / 2.0));
+	player->rdx = cos(rad(player->angle_deg - player->fov_deg / 2.0));
+	player->rdy = -sin(rad(player->angle_deg - player->fov_deg / 2.0));
+	return (0);
+}
+
+static int	create_main_window(t_window *win, t_game *game)
+{
+	win->width = WIN_WIDTH;
+	win->height = WIN_HEIGHT;
+	win->title = "cub3D";
+	win->win_ctx = mlx_new_window(game->mlx_ctx, win->width, win->height, win->title);
+	win->frame.width = win->width;
+	win->frame.height = win->height;
+	win->frame.img_ctx = mlx_new_image(game->mlx_ctx, win->frame.width, win->frame.height);
+	win->frame.addr = mlx_get_data_addr(win->frame.img_ctx, &win->frame.bits_per_pixel, &win->frame.bytes_per_line, &win->frame.endian);
+	return (0);
+}
+
+static int	create_debug_window(t_window *win, t_game *game)
+{
+	win->width = game->map.width * CELL_WIDTH;
+	win->height = game->map.height * CELL_WIDTH;
+	win->title = "Map view";
+	win->win_ctx = mlx_new_window(game->mlx_ctx, win->width, win->height, win->title);
+	win->frame.width = win->width;
+	win->frame.height = win->height;
+	win->frame.img_ctx = mlx_new_image(game->mlx_ctx, win->frame.width, win->frame.height);
+	win->frame.addr = mlx_get_data_addr(win->frame.img_ctx, &win->frame.bits_per_pixel, &win->frame.bytes_per_line, &win->frame.endian);
+	return (0);
+}
+
+static int	init_game(t_game *game)
+{
+	game->mlx_ctx = mlx_init();
+	init_map(&game->map);
+	init_player(&game->player);
+	create_main_window(&game->win0, game);
+	create_debug_window(&game->win1, game);
+	return (0);
+}
+
+static int	destroy_game(t_game *game)
+{
+	mlx_destroy_image(game->mlx_ctx, game->win0.frame.img_ctx);
+	mlx_destroy_window(game->mlx_ctx, game->win0.win_ctx);
+	mlx_destroy_image(game->mlx_ctx, game->win1.frame.img_ctx);
+	mlx_destroy_window(game->mlx_ctx, game->win1.win_ctx);
+	mlx_destroy_display(game->mlx_ctx);
+	free(game->mlx_ctx);
 	return (0);
 }
 
@@ -203,11 +231,24 @@ static int	draw_player(t_image *frame, t_player *player)
 	return (0);
 }
 
-static int	redraw_frame(t_game *game)
+static int	render_debug_window(t_window *win, t_game *game)
 {
-	draw_map(&game->win.frame, &game->map);
-	draw_player(&game->win.frame, &game->player);
-	mlx_put_image_to_window(game->mlx_ctx, game->win.win_ctx, game->win.frame.img_ctx, 0, 0);
+	draw_map(&win->frame, &game->map);
+	draw_player(&win->frame, &game->player);
+	mlx_put_image_to_window(game->mlx_ctx, win->win_ctx, win->frame.img_ctx, 0, 0);
+	return (0);
+}
+
+static int	rotate_player(t_player *player, int deg)
+{
+	player->angle_deg = (player->angle_deg + deg) % 360;
+	player->angle_rad = rad(player->angle_deg);
+	player->dx = cos(player->angle_rad);
+	player->dy = -sin(player->angle_rad);
+	player->ldx = cos(rad(player->angle_deg + player->fov_deg / 2.0));
+	player->ldy = -sin(rad(player->angle_deg + player->fov_deg / 2.0));
+	player->rdx = cos(rad(player->angle_deg - player->fov_deg / 2.0));
+	player->rdy = -sin(rad(player->angle_deg - player->fov_deg / 2.0));
 	return (0);
 }
 
@@ -231,25 +272,11 @@ static int	key_press_hook(int keysym, void *param)
 	}
 	else if (keysym == XK_Left)
 	{
-		game->player.angle_deg = (game->player.angle_deg - 15) % 360;
-		game->player.angle_rad = game->player.angle_deg * (M_PI / 180);
-		game->player.dx = -cos(game->player.angle_rad);
-		game->player.dy = -sin(game->player.angle_rad);
-		game->player.ldx = -cos((game->player.angle_deg - game->player.fov_deg / 2.0) * (M_PI / 180.0));
-		game->player.ldy = -sin((game->player.angle_deg - game->player.fov_deg / 2.0) * (M_PI / 180.0));
-		game->player.rdx = -cos((game->player.angle_deg + game->player.fov_deg / 2.0) * (M_PI / 180.0));
-		game->player.rdy = -sin((game->player.angle_deg + game->player.fov_deg / 2.0) * (M_PI / 180.0));
+		rotate_player(&game->player, 15);
 	}
 	else if (keysym == XK_Right)
 	{
-		game->player.angle_deg = (game->player.angle_deg + 15) % 360;
-		game->player.angle_rad = game->player.angle_deg * (M_PI / 180);
-		game->player.dx = -cos(game->player.angle_rad);
-		game->player.dy = -sin(game->player.angle_rad);
-		game->player.ldx = -cos((game->player.angle_deg - game->player.fov_deg / 2.0) * (M_PI / 180.0));
-		game->player.ldy = -sin((game->player.angle_deg - game->player.fov_deg / 2.0) * (M_PI / 180.0));
-		game->player.rdx = -cos((game->player.angle_deg + game->player.fov_deg / 2.0) * (M_PI / 180.0));
-		game->player.rdy = -sin((game->player.angle_deg + game->player.fov_deg / 2.0) * (M_PI / 180.0));
+		rotate_player(&game->player, -15);
 	}
 	printf("X  : %f\n", game->player.cx);
 	printf("Y  : %f\n", game->player.cy);
@@ -258,7 +285,7 @@ static int	key_press_hook(int keysym, void *param)
 	printf("Deg: %d\n", game->player.angle_deg);
 	printf("Rad: %f\n", game->player.angle_rad);
 	printf("------------------\n");
-	redraw_frame(game);
+	render_debug_window(&game->win1, game);
 	return (0);
 }
 
@@ -276,7 +303,16 @@ static int	expose_hook(void *param)
 	t_game	*game;
 
 	game = (t_game *)param;
-	redraw_frame(game);
+	render_debug_window(&game->win1, game);
+	return (0);
+}
+
+static int	init_hooks(t_game *game)
+{
+	mlx_hook(game->win1.win_ctx, KeyPress, KeyPressMask, key_press_hook, game);
+	mlx_key_hook(game->win1.win_ctx, key_release_hook, game->mlx_ctx);
+	mlx_hook(game->win1.win_ctx, DestroyNotify, 0, mlx_loop_end, game->mlx_ctx);
+	mlx_expose_hook(game->win1.win_ctx, expose_hook, game);
 	return (0);
 }
 
@@ -287,13 +323,8 @@ int	main(int argc, char *argv[])
 	(void)argc;
 	(void)argv;
 	init_game(&game);
-	init_map(&game.map);
-	init_player(&game.player);
-	mlx_hook(game.win.win_ctx, DestroyNotify, 0, mlx_loop_end, game.mlx_ctx);
-	mlx_hook(game.win.win_ctx, KeyPress, KeyPressMask, key_press_hook, &game);
-	mlx_key_hook(game.win.win_ctx, key_release_hook, game.mlx_ctx);
-	mlx_expose_hook(game.win.win_ctx, expose_hook, &game);
-	redraw_frame(&game);
+	init_hooks(&game);
+	render_debug_window(&game.win1, &game);
 	mlx_loop(game.mlx_ctx);
 	destroy_game(&game);
 	return (0);

@@ -16,5 +16,6 @@ git submodule update --init --recursive
 - [Pixel drawing with MinilibX](https://aurelienbrabant.fr/blog/pixel-drawing-with-the-minilibx)
 - [Lode's raycasting tutorial](https://lodev.org/cgtutor/raycasting.html)
 - [Ray tracing in C with SDL](https://www.youtube.com/watch?v=2BLRLuczykM)
+- [Xlib documentation](https://www.x.org/releases/current/doc/libX11/libX11/libX11.html)
 - [Play Wolfenstein 3D](http://users.atw.hu/wolf3d/)
 - [History of Wolfenstein](https://www.youtube.com/watch?v=S1qD9JRk5vM)

@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 21:13:52 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/04 16:51:53 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/05 14:24:19 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,10 +107,13 @@ typedef struct s_config
 }	t_config;
 
 // Main game structure
+// win0: Main game window
+// win1: Debug view
 typedef struct s_game
 {
 	void		*mlx_ctx;
-	t_window	win;
+	t_window	win0;
+	t_window	win1;
 	t_map		map;
 	t_player	player;
 	t_config	conf;

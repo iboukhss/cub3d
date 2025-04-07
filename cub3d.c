@@ -13,6 +13,7 @@
 #include "cub3d.h"
 #include "mlx.h"
 
+#define _GNU_SOURCE
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -280,21 +281,42 @@ static int	expose_hook(void *param)
 	return (0);
 }
 
+void	print_error(int default_prompt, char *error_msg)
+{
+	if (default_prompt == 1)
+		printf("Error\n");
+	if (error_msg != NULL)
+		printf("%s\n", error_msg);
+}
+
 int	main(int argc, char *argv[])
 {
 	t_game	game;
 
-	(void)argc;
-	(void)argv;
-	init_game(&game);
-	init_map(&game.map);
-	init_player(&game.player);
-	mlx_hook(game.win.win_ctx, DestroyNotify, 0, mlx_loop_end, game.mlx_ctx);
-	mlx_hook(game.win.win_ctx, KeyPress, KeyPressMask, key_press_hook, &game);
-	mlx_key_hook(game.win.win_ctx, key_release_hook, game.mlx_ctx);
-	mlx_expose_hook(game.win.win_ctx, expose_hook, &game);
-	redraw_frame(&game);
-	mlx_loop(game.mlx_ctx);
-	destroy_game(&game);
+	if (argc != 2)
+	{
+		print_error(1, "Cub3d takes a single parameter -> scene_path");
+		return (1);
+	}
+	else
+	{
+		(void)argc;
+		(void)argv;
+		if (get_scene(&game, argv[1]) != 0)
+		{
+			return (1);
+		}
+			
+		init_game(&game);
+		init_map(&game.map);
+		init_player(&game.player);
+		mlx_hook(game.win.win_ctx, DestroyNotify, 0, mlx_loop_end, game.mlx_ctx);
+		mlx_hook(game.win.win_ctx, KeyPress, KeyPressMask, key_press_hook, &game);
+		mlx_key_hook(game.win.win_ctx, key_release_hook, game.mlx_ctx);
+		mlx_expose_hook(game.win.win_ctx, expose_hook, &game);
+		redraw_frame(&game);
+		mlx_loop(game.mlx_ctx);
+		destroy_game(&game);
+	}
 	return (0);
 }

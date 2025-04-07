@@ -1,11 +1,21 @@
 NAME = cub3d
 BUILD ?= debug
 
+LIBFTDIR = libft
+GNLDIR = gnl
 MLXDIR = minilibx-linux
 LIBMLX = $(MLXDIR)/libmlx.a
+GNL = $(GNLDIR)/gnl.a
+LIBFT = $(LIBFTDIR)/libft.a
 
-SRCS = cub3d.c
-HDRS = cub3d.h
+SRCS_GNL = $(addprefix $(GNLDIR)/, get_next_line.c)
+SRCS_LIBFT = $(addprefix $(LIBFTDIR)/, ft_strncmp.c)
+
+SRCS = cub3d.c \
+		map_utils.c \
+		map_reading.c
+
+HDRS = cub3d.h libft/libft.h gnl/get_next_line.h
 
 OBJS = $(SRCS:.c=.o)
 DEPS = $(OBJS:.o=.d)
@@ -13,7 +23,7 @@ DEPS = $(OBJS:.o=.d)
 # https://www.gnu.org/software/make/manual/html_node/Implicit-Variables.html
 CC = cc
 RM = rm -f
-CPPFLAGS = -I$(MLXDIR)
+CPPFLAGS = -I$(MLXDIR) -I$(LIBFTDIR) -I$(GNLDIR)
 CFLAGS = -Wall -Wextra
 LDFLAGS = -L$(MLXDIR)
 LDLIBS = -lmlx -lXext -lX11 -lm
@@ -29,8 +39,14 @@ endif
 
 all: $(NAME)
 
-$(NAME): $(LIBMLX) $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS)
+$(NAME): $(LIBMLX) $(GNL) $(LIBFT) $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(GNL) $(LIBFT) $(LDLIBS)
+
+$(LIBFT):
+	$(MAKE) -C $(LIBFT_DIR)
+
+$(GNL):
+	$(MAKE) -C $(GNL_DIR)
 
 $(LIBMLX): $(MLXDIR)/.git
 	$(MAKE) -C $(MLXDIR)

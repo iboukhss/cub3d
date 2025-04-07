@@ -17,6 +17,9 @@
 # define WIN_HEIGHT 800
 # define CELL_WIDTH 32
 
+#define WHITESPACE " "
+#define IDENTIFIER "NOEAWESOFC"
+
 # include <stdbool.h>
 # include <X11/keysym.h>
 # include <X11/X.h>
@@ -72,9 +75,11 @@ typedef struct s_rect
 // might need them later.
 typedef struct s_map
 {
+	char	*scene_path;
 	char	**grid;
 	int		width;
 	int		height;
+	char	spawn_orientation;
 }	t_map;
 
 // NOTE(ismail): This is a mess right now. To summarize:
@@ -100,10 +105,23 @@ typedef struct s_player
 	float	rdy;
 }	t_player;
 
+typedef struct s_rgb
+{
+	int	red;
+	int	green;
+	int	blue;
+}	t_rgb;
+
+
 // This should hold the texture configuration data. Didn't look at this yet.
 typedef struct s_config
 {
-	// Add configuration data here
+	char	*NO;
+	char	*SO;
+	char	*WE;
+	char	*EA;
+	t_rgb	*floor;
+	t_rgb	*ceiling;
 }	t_config;
 
 // Main game structure
@@ -113,7 +131,12 @@ typedef struct s_game
 	t_window	win;
 	t_map		map;
 	t_player	player;
-	t_config	conf;
+	t_config	config;
 }	t_game;
+
+char	*get_next_line(int fd);
+void	print_error(int default_prompt, char *error_msg);
+int		get_scene(t_game *game, char *scene_path);
+int		read_scene(t_config *config, char *scene_path);
 
 #endif

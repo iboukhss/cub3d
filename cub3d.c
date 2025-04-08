@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 13:54:53 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/05 16:35:19 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/08 20:46:34 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,45 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+static t_vec2d	vec2d_init(float x, float y)
+{
+	return ((t_vec2d){x, y});
+}
+
+static t_vec2d	vec2d_scale(t_vec2d v, float s)
+{
+	return ((t_vec2d){v.x * s, v.y * s});
+}
+
+static t_vec2d	vec2d_add(t_vec2d a, t_vec2d b)
+{
+	return ((t_vec2d){a.x + b.x, a.y + b.y});
+}
+
+static t_ray2d	ray2d_init(t_vec2d o, t_vec2d dir)
+{
+	return ((t_ray2d){o, dir});
+}
+
+static t_line	ray2d_to_line(t_ray2d ray, float len, float raster_factor)
+{
+	t_vec2d	p1;
+	t_vec2d	p2;
+	t_vec2d	d;
+	t_line	l;
+
+	d = vec2d_scale(ray.dir, len);
+	p1 = ray.o;
+	p2 = vec2d_add(ray.o, d);
+	p1 = vec2d_scale(p1, raster_factor);
+	p2 = vec2d_scale(p2, raster_factor);
+	l.x0 = (int)p1.x;
+	l.y0 = (int)p1.y;
+	l.x1 = (int)p2.x;
+	l.y1 = (int)p2.y;
+	return (l);
+}
 
 static double	rad(double deg)
 {
@@ -39,6 +78,19 @@ static const char	*g_testmap[] = {
 	"11111111 1111111 111111111111    ",
 };
 
+static void	print_position(t_player *player)
+{
+	printf("Px : %f\n", player->cam.pos.x);
+	printf("Py : %f\n", player->cam.pos.y);
+	printf("Dx : %f\n", player->cam.dir.x);
+	printf("Dy : %f\n", player->cam.dir.y);
+	printf("Cx : %f\n", player->cam.plane.x);
+	printf("Cy : %f\n", player->cam.plane.y);
+	printf("Deg: %d\n", player->cam.angle_deg);
+	printf("Rad: %f\n", player->cam.angle_rad);
+	printf("---------------------\n");
+}
+
 static int	init_map(t_map *map)
 {
 	map->grid = (char **)g_testmap;
@@ -47,20 +99,24 @@ static int	init_map(t_map *map)
 	return (0);
 }
 
+// Let's assume a 90 deg FOV to keep the math simple for now.
+static int	init_camera(t_camera *cam, t_player *player)
+{
+	cam->angle_deg = player->orientation;
+	cam->angle_rad = rad(cam->angle_deg);
+	cam->pos = vec2d_init(player->start_x + 0.5f, player->start_y + 0.5f);
+	cam->dir = vec2d_init(cosf(cam->angle_rad), -sinf(cam->angle_rad));
+	cam->plane = vec2d_init(sinf(cam->angle_rad), cosf(cam->angle_rad));
+	return (0);
+}
+
 static int	init_player(t_player *player)
 {
-	player->cx = 4.5;
-	player->cy = 12.5;
-	player->angle_deg = 90;
-	player->fov_deg = 60;
-	player->radius = 0.25;
-	player->angle_rad = rad(player->angle_deg);
-	player->dx = cos(player->angle_rad);
-	player->dy = -sin(player->angle_rad);
-	player->ldx = cos(rad(player->angle_deg + player->fov_deg / 2.0));
-	player->ldy = -sin(rad(player->angle_deg + player->fov_deg / 2.0));
-	player->rdx = cos(rad(player->angle_deg - player->fov_deg / 2.0));
-	player->rdy = -sin(rad(player->angle_deg - player->fov_deg / 2.0));
+	player->start_x = 4;
+	player->start_y = 12;
+	player->orientation = EAST;
+	player->width = 0.5;
+	init_camera(&player->cam, player);
 	return (0);
 }
 
@@ -171,9 +227,9 @@ static int	draw_map(t_image *frame, t_map *map)
 {
 	t_rect	cell;
 
-	for (int y = 0; y < map->height; y++)
+	for (int y = 0; map->grid[y] != NULL && y < map->height; y++)
 	{
-		for (int x = 0; map->grid[y][x] && x < map->width; x++)
+		for (int x = 0; map->grid[y][x] != '\0' && x < map->width; x++)
 		{
 			cell.x = x * CELL_WIDTH;
 			cell.y = y * CELL_WIDTH;
@@ -196,38 +252,30 @@ static int	draw_map(t_image *frame, t_map *map)
 	return (0);
 }
 
+static t_rect	player_to_rect(t_player *player, float raster_factor)
+{
+	t_rect	rect;
+
+	rect.x = (player->cam.pos.x - player->width / 2) * raster_factor;
+	rect.y = (player->cam.pos.y - player->width / 2) * raster_factor;;
+	rect.w = player->width * raster_factor;
+	rect.h = player->width * raster_factor;
+	return (rect);
+}
+
 // Draws the player's square position and 3 direction vectors
 // representing the field of view.
 static int	draw_player(t_image *frame, t_player *player)
 {
-	t_rect	bound_box;
-	t_line	mid_vec;
-	t_line	min_vec;
-	t_line	max_vec;
+	t_ray2d	ray;
+	t_line	line;
+	t_rect	box;
 
-	int		center_x = player->cx * CELL_WIDTH;
-	int		center_y = player->cy * CELL_WIDTH;
-
-	bound_box.x = (player->cx - player->radius) * CELL_WIDTH;
-	bound_box.y = (player->cy - player->radius) * CELL_WIDTH;
-	bound_box.w = (player->radius * 2) * CELL_WIDTH;
-	bound_box.h = (player->radius * 2) * CELL_WIDTH;
-	mid_vec.x0 = center_x;
-	mid_vec.y0 = center_y;
-	mid_vec.x1 = center_x + player->dx * (4 * CELL_WIDTH);
-	mid_vec.y1 = center_y + player->dy * (4 * CELL_WIDTH);
-	min_vec.x0 = center_x;
-	min_vec.y0 = center_y;
-	min_vec.x1 = center_x + player->ldx * (4 * CELL_WIDTH);
-	min_vec.y1 = center_y + player->ldy * (4 * CELL_WIDTH);
-	max_vec.x0 = center_x;
-	max_vec.y0 = center_y;
-	max_vec.x1 = center_x + player->rdx * (4 * CELL_WIDTH);
-	max_vec.y1 = center_y + player->rdy * (4 * CELL_WIDTH);
-	fill_rect(frame, &bound_box, 0xFF00FF);
-	draw_line(frame, &mid_vec, 0xFFFF00);
-	draw_line(frame, &min_vec, 0x00FFFF);
-	draw_line(frame, &max_vec, 0x00FFFF);
+	box = player_to_rect(player, CELL_WIDTH);
+	ray = ray2d_init(player->cam.pos, player->cam.dir);
+	line = ray2d_to_line(ray, 12, CELL_WIDTH);
+	fill_rect(frame, &box, 0xFF00FF);
+	draw_line(frame, &line, 0x00FF00);
 	return (0);
 }
 
@@ -239,53 +287,49 @@ static int	render_debug_window(t_window *win, t_game *game)
 	return (0);
 }
 
-static int	rotate_player(t_player *player, int deg)
+static int	move_camera(t_camera *cam, float move_speed)
 {
-	player->angle_deg = (player->angle_deg + deg) % 360;
-	player->angle_rad = rad(player->angle_deg);
-	player->dx = cos(player->angle_rad);
-	player->dy = -sin(player->angle_rad);
-	player->ldx = cos(rad(player->angle_deg + player->fov_deg / 2.0));
-	player->ldy = -sin(rad(player->angle_deg + player->fov_deg / 2.0));
-	player->rdx = cos(rad(player->angle_deg - player->fov_deg / 2.0));
-	player->rdy = -sin(rad(player->angle_deg - player->fov_deg / 2.0));
+	t_vec2d	move;
+	t_vec2d	dest;
+
+	move = vec2d_scale(cam->dir, move_speed);
+	dest = vec2d_add(cam->pos, move);
+	cam->pos = dest;
 	return (0);
 }
 
-// NOTE(ismail): Very messy right now. Needs better refactoring.
+static int	rotate_camera(t_camera *cam, int angle_deg)
+{
+	cam->angle_deg = (cam->angle_deg + angle_deg + 360) % 360;
+	cam->angle_rad = rad(cam->angle_deg);
+	cam->dir = vec2d_init(cosf(cam->angle_rad), -sinf(cam->angle_rad));
+	cam->plane = vec2d_init(sinf(cam->angle_rad), cos(cam->angle_rad));
+	return (0);
+}
+
 static int	key_press_hook(int keysym, void *param)
 {
 	t_game	*game;
-	float	move_speed;
 
 	game = (t_game *)param;
-	move_speed = 0.25;
 	if (keysym == XK_Up)
 	{
-		game->player.cx += game->player.dx * move_speed;
-		game->player.cy += game->player.dy * move_speed;
+		move_camera(&game->player.cam, 0.25f);
 	}
-	else if (keysym == XK_Down)
+	if (keysym == XK_Down)
 	{
-		game->player.cx -= game->player.dx * move_speed;
-		game->player.cy -= game->player.dy * move_speed;
+		move_camera(&game->player.cam, -0.25f);
 	}
-	else if (keysym == XK_Left)
+	if (keysym == XK_Left)
 	{
-		rotate_player(&game->player, 15);
+		rotate_camera(&game->player.cam, 15);
 	}
-	else if (keysym == XK_Right)
+	if (keysym == XK_Right)
 	{
-		rotate_player(&game->player, -15);
+		rotate_camera(&game->player.cam, -15);
 	}
-	printf("X  : %f\n", game->player.cx);
-	printf("Y  : %f\n", game->player.cy);
-	printf("Dx : %f\n", game->player.dx);
-	printf("Dy : %f\n", game->player.dy);
-	printf("Deg: %d\n", game->player.angle_deg);
-	printf("Rad: %f\n", game->player.angle_rad);
-	printf("------------------\n");
 	render_debug_window(&game->win1, game);
+	print_position(&game->player);
 	return (0);
 }
 

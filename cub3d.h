@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 21:13:52 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/05 14:24:19 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/08 19:13:02 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,14 @@
 # include <stdbool.h>
 # include <X11/keysym.h>
 # include <X11/X.h>
+
+enum e_orientation
+{
+	EAST = 0,
+	NORTH = 90,
+	WEST = 180,
+	SOUTH = 270,
+};
 
 // Convenient MLX data structures
 typedef struct s_image
@@ -42,7 +50,20 @@ typedef struct s_window
 	t_image	frame;
 }	t_window;
 
-// Utility classes for math calculations
+// Math types
+typedef struct s_vec2d
+{
+	float	x;
+	float	y;
+}	t_vec2d;
+
+typedef struct s_ray2d
+{
+	t_vec2d	o;
+	t_vec2d	dir;
+}	t_ray2d;
+
+// Raster types
 typedef struct s_line
 {
 	int	x0;
@@ -77,27 +98,22 @@ typedef struct s_map
 	int		height;
 }	t_map;
 
-// NOTE(ismail): This is a mess right now. To summarize:
-// cx: Player center x coordinate (add 0.5 to center on the pixel grid)
-// cy: Player center y coordinate (add 0.5 to center on the pixel grid)
-// angle_deg: Starting angle direction, as in: NORTH = 90, WEST = 180,
-// SOUTH = 270 and EAST = 0 or 360
-// fov_deg: Player field of view (anywhere between 60 and 90 is good)
-// Everything else is temporary and subject to change.
-typedef struct s_player
+typedef struct s_camera
 {
-	float	cx;
-	float	cy;
-	float	radius;
-	float	dx;
-	float	dy;
 	int		angle_deg;
 	float	angle_rad;
-	int		fov_deg;
-	float	ldx;
-	float	ldy;
-	float	rdx;
-	float	rdy;
+	t_vec2d	pos;
+	t_vec2d	dir;
+	t_vec2d	plane;
+}	t_camera;
+
+typedef struct s_player
+{
+	int					start_x;
+	int					start_y;
+	enum e_orientation	orientation;
+	float				width;
+	t_camera			cam;
 }	t_player;
 
 // This should hold the texture configuration data. Didn't look at this yet.

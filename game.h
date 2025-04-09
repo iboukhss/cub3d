@@ -1,25 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cub3d.h                                            :+:      :+:    :+:   */
+/*   game.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/29 21:13:52 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/09 16:13:10 by iboukhss         ###   ########.fr       */
+/*   Created: 2025/04/09 19:19:47 by iboukhss          #+#    #+#             */
+/*   Updated: 2025/04/10 00:00:59 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CUB3D_H
-# define CUB3D_H
+#ifndef GAME_H
+# define GAME_H
 
 # define WIN_WIDTH 1280
 # define WIN_HEIGHT 800
 # define TILE_SIZE 32
 
-# include <stdbool.h>
-# include <X11/keysym.h>
-# include <X11/X.h>
+# include "graphics.h"
+# include "vec2.h"
+
+# include <stddef.h>
 
 enum e_orientation
 {
@@ -28,64 +29,6 @@ enum e_orientation
 	WEST = 180,
 	SOUTH = 270,
 };
-
-// Convenient MLX data structures
-typedef struct s_image
-{
-	void	*img_ctx;
-	char	*addr;
-	int		width;
-	int		height;
-	int		bits_per_pixel;
-	int		bytes_per_line;
-	int		endian;
-}	t_image;
-
-typedef struct s_window
-{
-	void	*win_ctx;
-	int		width;
-	int		height;
-	char	*title;
-	t_image	frame;
-}	t_window;
-
-// Vector types
-typedef struct s_vec2d
-{
-	float	x;
-	float	y;
-}	t_vec2d;
-
-typedef struct s_ray2d
-{
-	t_vec2d	pos;
-	t_vec2d	dir;
-}	t_ray2d;
-
-// Raster types
-typedef struct s_line
-{
-	int	x0;
-	int	y0;
-	int	x1;
-	int	y1;
-}	t_line;
-
-typedef struct s_circle
-{
-	int	x;
-	int	y;
-	int	r;
-}	t_circle;
-
-typedef struct s_rect
-{
-	int	x;
-	int	y;
-	int	w;
-	int	h;
-}	t_rect;
 
 // NOTE(ismail): Make grid a null-terminated array of null-terminated strings.
 // This will help us avoid segfaults and out-of-bounds array access.
@@ -135,4 +78,9 @@ typedef struct s_game
 	t_config	conf;
 }	t_game;
 
-#endif
+int	init_game(t_game *game);
+int	init_hooks(t_game *game);
+int	render_scene(t_game *game);
+int	destroy_game(t_game *game);
+
+#endif // GAME_H

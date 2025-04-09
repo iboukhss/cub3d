@@ -4,8 +4,13 @@ BUILD ?= debug
 MLXDIR = minilibx-linux
 LIBMLX = $(MLXDIR)/libmlx.a
 
-SRCS = cub3d.c
-HDRS = cub3d.h
+SRCS =	game.c \
+	game_hooks.c \
+	game_init.c \
+	graphics_utils.c \
+	vec2_utils.c
+
+HDRS = game.h graphics.h vec2.h
 
 OBJS = $(SRCS:.c=.o)
 DEPS = $(OBJS:.o=.d)

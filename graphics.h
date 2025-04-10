@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:53:21 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/10 00:01:55 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/10 12:40:14 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ typedef struct s_rect
 uint32_t	rgb_to_hex(uint8_t red, uint8_t green, uint8_t blue);
 
 int			put_pixel(t_image *img, int pos_x, int pos_y, uint32_t color);
-int			fill_rect(t_image *img, t_rect *rect, uint32_t color);
-int			draw_line(t_image *img, t_line *line, uint32_t color);
+int			fill_rect(t_image *img, t_rect rect, uint32_t color);
+int			draw_line(t_image *img, t_line line, uint32_t color);
 
 #endif // GRAPHICS_H

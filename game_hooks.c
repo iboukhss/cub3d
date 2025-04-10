@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 23:24:15 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/09 23:27:13 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/10 13:15:56 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,9 @@ static int	move_camera(t_camera *cam, float move_speed)
 	return (0);
 }
 
-static int	rotate_camera(t_camera *cam, int angle_deg)
+static int	rotate_camera(t_camera *cam, int rot_speed)
 {
-	cam->angle_deg = (cam->angle_deg + angle_deg + 360) % 360;
+	cam->angle_deg = (cam->angle_deg + rot_speed + 360) % 360;
 	cam->angle_rad = rad(cam->angle_deg);
 	cam->dir = vec2d_init(cosf(cam->angle_rad), -sinf(cam->angle_rad));
 	cam->plane = vec2d_init(sinf(cam->angle_rad), cos(cam->angle_rad));
@@ -55,19 +55,19 @@ static int	key_press_hook(int keysym, void *param)
 	game = (t_game *)param;
 	if (keysym == XK_Up)
 	{
-		move_camera(&game->player.cam, 0.25f);
+		move_camera(&game->player.cam, 0.33f);
 	}
 	if (keysym == XK_Down)
 	{
-		move_camera(&game->player.cam, -0.25f);
+		move_camera(&game->player.cam, -0.33f);
 	}
 	if (keysym == XK_Left)
 	{
-		rotate_camera(&game->player.cam, 15);
+		rotate_camera(&game->player.cam, 10);
 	}
 	if (keysym == XK_Right)
 	{
-		rotate_camera(&game->player.cam, -15);
+		rotate_camera(&game->player.cam, -10);
 	}
 	render_scene(game);
 	print_position(&game->player);

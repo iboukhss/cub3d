@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:27:45 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/09 23:17:23 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/10 12:39:54 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,11 @@ int	put_pixel(t_image *img, int pos_x, int pos_y, uint32_t color)
 	return (0);
 }
 
-int	fill_rect(t_image *img, t_rect *rect, uint32_t color)
+int	fill_rect(t_image *img, t_rect rect, uint32_t color)
 {
-	for (int y = rect->y; y < rect->y + rect->h; y++)
+	for (int y = rect.y; y < rect.y + rect.h; y++)
 	{
-		for (int x = rect->x; x < rect->x + rect->w; x++)
+		for (int x = rect.x; x < rect.x + rect.w; x++)
 		{
 			put_pixel(img, x, y, color);
 		}
@@ -57,17 +57,17 @@ int	fill_rect(t_image *img, t_rect *rect, uint32_t color)
 //
 // NOTE(ismail): It seems like sometimes lines are not rasterized properly,
 // esp. vertical lines. Minor issue.
-int	draw_line(t_image *img, t_line *line, uint32_t color)
+int	draw_line(t_image *img, t_line line, uint32_t color)
 {
-	float	dx = line->x1 - line->x0;
-	float	dy = line->y1 - line->y0;
+	float	dx = line.x1 - line.x0;
+	float	dy = line.y1 - line.y0;
 	int		steps = fabsf(dx) > fabsf(dy) ? fabsf(dx) : fabsf(dy);
 
 	float	x_inc = dx / steps;
 	float	y_inc = dy / steps;
 
-	float	x = line->x0;
-	float	y = line->y0;
+	float	x = line.x0;
+	float	y = line.y0;
 
 	for (int i = 0; i <= steps; i++)
 	{

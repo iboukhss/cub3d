@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 23:17:42 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/09 23:51:49 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/10 13:21:12 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,28 +64,28 @@ static int	init_player(t_player *player)
 	return (0);
 }
 
-static int	create_main_window(t_window *win, t_game *game)
+static int	create_main_window(t_window *win, void *mlx_ctx)
 {
 	win->width = WIN_WIDTH;
 	win->height = WIN_HEIGHT;
 	win->title = "cub3D";
-	win->win_ctx = mlx_new_window(game->mlx_ctx, win->width, win->height, win->title);
+	win->win_ctx = mlx_new_window(mlx_ctx, win->width, win->height, win->title);
 	win->frame.width = win->width;
 	win->frame.height = win->height;
-	win->frame.img_ctx = mlx_new_image(game->mlx_ctx, win->frame.width, win->frame.height);
+	win->frame.img_ctx = mlx_new_image(mlx_ctx, win->frame.width, win->frame.height);
 	win->frame.addr = mlx_get_data_addr(win->frame.img_ctx, &win->frame.bits_per_pixel, &win->frame.bytes_per_line, &win->frame.endian);
 	return (0);
 }
 
-static int	create_debug_window(t_window *win, t_game *game)
+static int	create_debug_window(t_window *win, t_map map, void *mlx_ctx)
 {
-	win->width = game->map.width * TILE_SIZE;
-	win->height = game->map.height * TILE_SIZE;
+	win->width = map.width * TILE_SIZE;
+	win->height = map.height * TILE_SIZE;
 	win->title = "Map view";
-	win->win_ctx = mlx_new_window(game->mlx_ctx, win->width, win->height, win->title);
+	win->win_ctx = mlx_new_window(mlx_ctx, win->width, win->height, win->title);
 	win->frame.width = win->width;
 	win->frame.height = win->height;
-	win->frame.img_ctx = mlx_new_image(game->mlx_ctx, win->frame.width, win->frame.height);
+	win->frame.img_ctx = mlx_new_image(mlx_ctx, win->frame.width, win->frame.height);
 	win->frame.addr = mlx_get_data_addr(win->frame.img_ctx, &win->frame.bits_per_pixel, &win->frame.bytes_per_line, &win->frame.endian);
 	return (0);
 }
@@ -95,8 +95,8 @@ int	init_game(t_game *game)
 	game->mlx_ctx = mlx_init();
 	init_map(&game->map);
 	init_player(&game->player);
-	create_main_window(&game->win0, game);
-	create_debug_window(&game->win1, game);
+	create_main_window(&game->win0, game->mlx_ctx);
+	create_debug_window(&game->win1, game->map, game->mlx_ctx);
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 23:17:42 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/10 13:21:12 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/11 17:28:57 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,15 @@ static int	init_map(t_map *map)
 	return (0);
 }
 
+static int	init_player(t_player *player)
+{
+	player->start_x = 4;
+	player->start_y = 12;
+	player->orientation = NORTH;
+	player->width = 0.5;
+	return (0);
+}
+
 // NOTE(ismail): Y-axis is inverted compared to the regular unit circle.
 // Be mindful when dealing with rotations.
 static int	init_camera(t_camera *cam, t_player *player)
@@ -54,39 +63,41 @@ static int	init_camera(t_camera *cam, t_player *player)
 	return (0);
 }
 
-static int	init_player(t_player *player)
+static int	init_main_window(t_window *win, t_game *game)
 {
-	player->start_x = 4;
-	player->start_y = 12;
-	player->orientation = NORTH;
-	player->width = 0.5;
-	init_camera(&player->cam, player);
-	return (0);
-}
-
-static int	create_main_window(t_window *win, void *mlx_ctx)
-{
+	win->win_ctx = NULL;
+	win->frame.img_ctx = NULL;
 	win->width = WIN_WIDTH;
 	win->height = WIN_HEIGHT;
 	win->title = "cub3D";
-	win->win_ctx = mlx_new_window(mlx_ctx, win->width, win->height, win->title);
-	win->frame.width = win->width;
-	win->frame.height = win->height;
-	win->frame.img_ctx = mlx_new_image(mlx_ctx, win->frame.width, win->frame.height);
-	win->frame.addr = mlx_get_data_addr(win->frame.img_ctx, &win->frame.bits_per_pixel, &win->frame.bytes_per_line, &win->frame.endian);
+	win->loop_hook = render_scene;
+	win->key_press_hook = keypress_main;
+	win->key_release_hook = keyrelease_main;
+	win->button_press_hook = NULL;
+	win->button_release_hook = NULL;
+	win->motion_notify_hook = NULL;
+	win->expose_hook = NULL;
+	win->destroy_notify_hook = close_main_window;
+	win->param = game;
 	return (0);
 }
 
-static int	create_debug_window(t_window *win, t_map map, void *mlx_ctx)
+static int	init_debug_window(t_window *win, t_game *game)
 {
-	win->width = map.width * TILE_SIZE;
-	win->height = map.height * TILE_SIZE;
-	win->title = "Map view";
-	win->win_ctx = mlx_new_window(mlx_ctx, win->width, win->height, win->title);
-	win->frame.width = win->width;
-	win->frame.height = win->height;
-	win->frame.img_ctx = mlx_new_image(mlx_ctx, win->frame.width, win->frame.height);
-	win->frame.addr = mlx_get_data_addr(win->frame.img_ctx, &win->frame.bits_per_pixel, &win->frame.bytes_per_line, &win->frame.endian);
+	win->win_ctx = NULL;
+	win->frame.img_ctx = NULL;
+	win->width = game->map.width * TILE_SIZE;
+	win->height = game->map.height * TILE_SIZE;
+	win->title = "Map";
+	win->loop_hook = NULL;
+	win->key_press_hook = NULL;
+	win->key_release_hook = keyrelease_debug;
+	win->button_press_hook = NULL;
+	win->button_release_hook = NULL;
+	win->motion_notify_hook = NULL;
+	win->expose_hook = NULL;
+	win->destroy_notify_hook = close_debug_window;
+	win->param = game;
 	return (0);
 }
 
@@ -95,17 +106,16 @@ int	init_game(t_game *game)
 	game->mlx_ctx = mlx_init();
 	init_map(&game->map);
 	init_player(&game->player);
-	create_main_window(&game->win0, game->mlx_ctx);
-	create_debug_window(&game->win1, game->map, game->mlx_ctx);
+	init_camera(&game->player.cam, &game->player);
+	init_main_window(&game->win0, game);
+	init_debug_window(&game->win1, game);
 	return (0);
 }
 
 int	destroy_game(t_game *game)
 {
-	mlx_destroy_image(game->mlx_ctx, game->win0.frame.img_ctx);
-	mlx_destroy_window(game->mlx_ctx, game->win0.win_ctx);
-	mlx_destroy_image(game->mlx_ctx, game->win1.frame.img_ctx);
-	mlx_destroy_window(game->mlx_ctx, game->win1.win_ctx);
+	destroy_window(&game->win0, game->mlx_ctx);
+	destroy_window(&game->win1, game->mlx_ctx);
 	mlx_destroy_display(game->mlx_ctx);
 	free(game->mlx_ctx);
 	return (0);

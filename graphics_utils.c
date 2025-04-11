@@ -6,13 +6,59 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:27:45 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/10 12:39:54 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/11 16:53:41 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "graphics.h"
 
 #include <math.h>
+
+int	create_window(t_window *win, void *mlx_ctx)
+{
+	if (win->win_ctx)
+	{
+		return (1);
+	}
+	win->win_ctx = mlx_new_window(mlx_ctx, win->width, win->height, (char *)win->title);
+	win->frame.width = win->width;
+	win->frame.height = win->height;
+	win->frame.img_ctx = mlx_new_image(mlx_ctx, win->frame.width, win->frame.height);
+	win->frame.addr = mlx_get_data_addr(win->frame.img_ctx,
+										&win->frame.bits_per_pixel,
+										&win->frame.bytes_per_line,
+										&win->frame.endian);
+	if (win->loop_hook)
+		mlx_loop_hook(mlx_ctx, win->loop_hook, win->param);
+	if (win->key_press_hook)
+		mlx_hook(win->win_ctx, KeyPress, KeyPressMask, win->key_press_hook, win->param);
+	if (win->key_release_hook)
+		mlx_hook(win->win_ctx, KeyRelease, KeyReleaseMask, win->key_release_hook, win->param);
+	if (win->button_press_hook)
+		mlx_hook(win->win_ctx, ButtonPress, ButtonPressMask, win->button_press_hook, win->param);
+	if (win->button_release_hook)
+		mlx_hook(win->win_ctx, ButtonRelease, ButtonReleaseMask, win->button_release_hook, win->param);
+	if (win->motion_notify_hook)
+		mlx_hook(win->win_ctx, MotionNotify, PointerMotionMask, win->motion_notify_hook, win->param);
+	if (win->expose_hook)
+		mlx_hook(win->win_ctx, Expose, ExposureMask, win->expose_hook, win->param);
+	if (win->destroy_notify_hook)
+		mlx_hook(win->win_ctx, DestroyNotify, StructureNotifyMask, win->destroy_notify_hook, win->param);
+	return (0);
+}
+
+int	destroy_window(t_window *win, void *mlx_ctx)
+{
+	if (!win->win_ctx)
+	{
+		return (1);
+	}
+	mlx_destroy_image(mlx_ctx, win->frame.img_ctx);
+	win->frame.img_ctx = NULL;
+	mlx_destroy_window(mlx_ctx, win->win_ctx);
+	win->win_ctx = NULL;
+	return (0);
+}
 
 uint32_t	rgb_to_hex(uint8_t red, uint8_t green, uint8_t blue)
 {
@@ -27,9 +73,13 @@ int	put_pixel(t_image *img, int pos_x, int pos_y, uint32_t color)
 	int		bytes_per_line;
 	int		bytes_per_pixel;
 
+	if (!img->img_ctx)
+	{
+		return (1);
+	}
 	if (pos_x < 0 || pos_x >= img->width || pos_y < 0 || pos_y >= img->height)
 	{
-		return (-1);
+		return (2);
 	}
 	bytes_per_line = img->bytes_per_line;
 	bytes_per_pixel = img->bits_per_pixel / 8;

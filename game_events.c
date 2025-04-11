@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   game_hooks.c                                       :+:      :+:    :+:   */
+/*   game_events.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/09 23:24:15 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/10 13:15:56 by iboukhss         ###   ########.fr       */
+/*   Created: 2025/04/11 15:25:05 by iboukhss          #+#    #+#             */
+/*   Updated: 2025/04/11 17:32:51 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,49 @@
 
 #include <math.h>
 #include <stdio.h>
+
+int	close_main_window(void *param)
+{
+	t_game	*game;
+
+	game = (t_game *)param;
+	mlx_loop_end(game->mlx_ctx);
+	return (0);
+}
+
+int	close_debug_window(void *param)
+{
+	t_game	*game;
+
+	game = (t_game *)param;
+	destroy_window(&game->win1, game->mlx_ctx);
+	return (0);
+}
+
+int	keyrelease_main(int keysym, void *param)
+{
+	t_game	*game;
+
+	game = (t_game *)param;
+	if (keysym == XK_Escape)
+	{
+		close_main_window(param);
+	}
+	if (keysym == XK_m || keysym == XK_F1)
+	{
+		create_window(&game->win1, game->mlx_ctx);
+	}
+	return (0);
+}
+
+int	keyrelease_debug(int keysym, void *param)
+{
+	if (keysym == XK_Escape)
+	{
+		close_debug_window(param);
+	}
+	return (0);
+}
 
 static void	print_position(t_player *player)
 {
@@ -48,7 +91,7 @@ static int	rotate_camera(t_camera *cam, int rot_speed)
 	return (0);
 }
 
-static int	key_press_hook(int keysym, void *param)
+int	keypress_main(int keysym, void *param)
 {
 	t_game	*game;
 
@@ -69,34 +112,6 @@ static int	key_press_hook(int keysym, void *param)
 	{
 		rotate_camera(&game->player.cam, -10);
 	}
-	render_scene(game);
 	print_position(&game->player);
-	return (0);
-}
-
-static int	key_release_hook(int keysym, void *mlx_ctx)
-{
-	if (keysym == XK_Escape)
-	{
-		mlx_loop_end(mlx_ctx);
-	}
-	return (0);
-}
-
-static int	expose_hook(void *param)
-{
-	t_game	*game;
-
-	game = (t_game *)param;
-	render_scene(game);
-	return (0);
-}
-
-int	init_hooks(t_game *game)
-{
-	mlx_hook(game->win1.win_ctx, KeyPress, KeyPressMask, key_press_hook, game);
-	mlx_key_hook(game->win1.win_ctx, key_release_hook, game->mlx_ctx);
-	mlx_hook(game->win1.win_ctx, DestroyNotify, 0, mlx_loop_end, game->mlx_ctx);
-	mlx_expose_hook(game->win1.win_ctx, expose_hook, game);
 	return (0);
 }

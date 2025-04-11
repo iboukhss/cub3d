@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:53:21 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/10 12:40:14 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/11 16:52:58 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # define GRAPHICS_H
 
 # include <mlx.h>
+# include <stddef.h>
 # include <stdint.h>
 # include <X11/keysym.h>
 # include <X11/X.h>
@@ -35,11 +36,20 @@ typedef struct s_image
 
 typedef struct s_window
 {
-	void	*win_ctx;
-	int		width;
-	int		height;
-	char	*title;
-	t_image	frame;
+	void		*win_ctx;
+	t_image		frame;
+	int			width;
+	int			height;
+	const char	*title;
+	int			(*loop_hook)(void *);
+	int			(*key_press_hook)(int, void *);
+	int			(*key_release_hook)(int, void *);
+	int			(*button_press_hook)(int, int, int, void *);
+	int			(*button_release_hook)(int, int, int, void *);
+	int			(*motion_notify_hook)(int, int, int, void *);
+	int			(*expose_hook)(void *);
+	int			(*destroy_notify_hook)(void *);
+	void		*param;
 }	t_window;
 
 // Raster types
@@ -65,6 +75,9 @@ typedef struct s_rect
 	int	w;
 	int	h;
 }	t_rect;
+
+int			create_window(t_window *win, void *mlx_ctx);
+int			destroy_window(t_window *win, void *mlx_ctx);
 
 uint32_t	rgb_to_hex(uint8_t red, uint8_t green, uint8_t blue);
 

@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:19:47 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/10 00:00:59 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/11 17:40:14 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 # define WIN_WIDTH 1280
 # define WIN_HEIGHT 800
-# define TILE_SIZE 32
+# define TILE_SIZE 24
 
 # include "graphics.h"
 # include "vec2.h"
@@ -79,8 +79,16 @@ typedef struct s_game
 }	t_game;
 
 int	init_game(t_game *game);
-int	init_hooks(t_game *game);
-int	render_scene(t_game *game);
 int	destroy_game(t_game *game);
+
+// Hooks
+int	close_main_window(void *param);
+int	close_debug_window(void *param);
+
+int	render_scene(void *param);
+
+int	keyrelease_main(int keysym, void *param);
+int	keyrelease_debug(int keysym, void *param);
+int	keypress_main(int keysym, void *param);
 
 #endif // GAME_H

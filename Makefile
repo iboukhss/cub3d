@@ -4,8 +4,9 @@ BUILD ?= debug
 MLXDIR = minilibx-linux
 LIBMLX = $(MLXDIR)/libmlx.a
 
-SRCS =	game.c \
-	game_hooks.c \
+SRCS = \
+	game.c \
+	game_events.c \
 	game_init.c \
 	graphics_utils.c \
 	vec2_utils.c

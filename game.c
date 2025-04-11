@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:29:38 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/10 14:00:02 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/11 16:54:22 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,14 +163,16 @@ static int	draw_floor_and_ceiling(t_image *img)
 }
 
 // NOTE(ismail): Work in progress. Heavy refactoring incoming.
-int	render_scene(t_game *game)
+int	render_scene(void *param)
 {
+	t_game	*game;
 	float	camera_x;
 	t_ray2d	ray;
 	float	perp_wall_dist;
 	t_line	line;
 	t_line	vert_line;
 
+	game = (t_game *)param;
 	draw_map(&game->win1.frame, game->map);
 	draw_player(&game->win1.frame, &game->player);
 	draw_floor_and_ceiling(&game->win0.frame);
@@ -205,8 +207,10 @@ int	render_scene(t_game *game)
 			draw_line_vertical(&game->win0.frame, vert_line, 0x0000FF / 2);
 		}
 	}
-	mlx_put_image_to_window(game->mlx_ctx, game->win1.win_ctx, game->win1.frame.img_ctx, 0, 0);
-	mlx_put_image_to_window(game->mlx_ctx, game->win0.win_ctx, game->win0.frame.img_ctx, 0, 0);
+	if (game->win1.win_ctx)
+		mlx_put_image_to_window(game->mlx_ctx, game->win1.win_ctx, game->win1.frame.img_ctx, 0, 0);
+	if (game->win0.win_ctx)
+		mlx_put_image_to_window(game->mlx_ctx, game->win0.win_ctx, game->win0.frame.img_ctx, 0, 0);
 	return (0);
 }
 
@@ -217,8 +221,7 @@ int	main(int argc, char *argv[])
 	(void)argc;
 	(void)argv;
 	init_game(&game);
-	init_hooks(&game);
-	render_scene(&game);
+	create_window(&game.win0, game.mlx_ctx);
 	mlx_loop(game.mlx_ctx);
 	destroy_game(&game);
 	return (0);

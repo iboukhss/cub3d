@@ -1,5 +1,5 @@
 NAME = libft.a
-SRCS = ft_strncmp.c
+SRCS = ft_strncmp.c ft_atoi.c ft_split.c ft_strlcpy.c
 OBJS = $(SRCS:.c=.o)
 
 CC = cc

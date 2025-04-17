@@ -1,4 +1,4 @@
-#include "cub3d.h"
+#include "game.h"
 
 //needed for flood fill
 /*int	init_tmp_map(t_data *data)

@@ -1,4 +1,4 @@
-#include "cub3d.h"
+#include "game.h"
 
 #include <stdio.h>
 
@@ -22,4 +22,12 @@ void print_map(t_map map)
 		printf("%s", map.grid[i]);
 		i++;
 	}
+}
+
+void    print_error(int default_prompt, char* error_msg)
+{
+    if (default_prompt == 1)
+        printf("Error\n");
+    if (error_msg != NULL)
+        printf("%s\n", error_msg);   
 }

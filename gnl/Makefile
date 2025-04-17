@@ -1,4 +1,4 @@
-NAME = gnl.a
+NAME = libgnl.a
 SRCS = get_next_line.c
 OBJS = $(SRCS:.c=.o)
 

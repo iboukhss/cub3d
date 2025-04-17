@@ -66,7 +66,7 @@ char *ft_substr(char *s, int start, int len)
 {
     if (!s)
         return (NULL);
-    size_t len_s = ft_strlen(s);
+    int len_s = ft_strlen(s);
     if (len_s < start + len)
         len = len_s - start;
     char *new_s = malloc(len + 1);

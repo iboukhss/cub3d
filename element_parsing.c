@@ -1,4 +1,4 @@
-#include "cub3d.h"
+#include "game.h"
 #include "get_next_line.h"
 #include "libft.h"
 

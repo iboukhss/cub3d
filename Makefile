@@ -1,12 +1,13 @@
 NAME = cub3d
 BUILD ?= debug
 
-LIBFTDIR = libft
-GNLDIR = gnl
-MLXDIR = minilibx-linux
-LIBMLX = $(MLXDIR)/libmlx.a
-GNL = $(GNLDIR)/gnl.a
-LIBFT = $(LIBFTDIR)/libft.a
+LIBFT_DIR = libft
+GNL_DIR = gnl
+MLX_DIR = minilibx-linux
+
+LIBMLX = $(MLX_DIR)/libmlx.a
+LIBGNL = $(GNL_DIR)/libgnl.a
+LIBFT = $(LIBFT_DIR)/libft.a
 
 SRCS = \
 	debug_print.c \
@@ -17,14 +18,9 @@ SRCS = \
 	game_events.c \
 	game_init.c \
 	graphics_utils.c \
-	map_utils.c \
-	map_reading.c \
 	vec2_utils.c
 
 HDRS = game.h graphics.h vec2.h libft/libft.h gnl/get_next_line.h
-
-SRCS_GNL = $(addprefix $(GNLDIR)/, get_next_line.c)
-SRCS_LIBFT = $(addprefix $(LIBFTDIR)/, ft_strncmp.c)
 
 OBJS = $(SRCS:.c=.o)
 DEPS = $(OBJS:.o=.d)
@@ -32,10 +28,10 @@ DEPS = $(OBJS:.o=.d)
 # https://www.gnu.org/software/make/manual/html_node/Implicit-Variables.html
 CC = cc
 RM = rm -f
-CPPFLAGS = -I$(MLXDIR) -I$(LIBFTDIR) -I$(GNLDIR)
+CPPFLAGS = -I$(MLX_DIR) -I$(LIBFT_DIR) -I$(GNL_DIR)
 CFLAGS = -Wall -Wextra
-LDFLAGS = -L$(MLXDIR)
-LDLIBS = -lmlx -lXext -lX11 -lm
+LDFLAGS = -L$(MLX_DIR) -L$(LIBFT_DIR) -L$(GNL_DIR)
+LDLIBS = -lmlx -lXext -lX11 -lm -lgnl -lft
 
 ifeq ($(BUILD),release)
 	CFLAGS += -Werror
@@ -48,19 +44,19 @@ endif
 
 all: $(NAME)
 
-$(NAME): $(LIBMLX) $(GNL) $(LIBFT) $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(GNL) $(LIBFT) $(LDLIBS)
+$(NAME): $(LIBMLX) $(LIBGNL) $(LIBFT) $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS)
 
 $(LIBFT):
 	$(MAKE) -C $(LIBFT_DIR)
 
-$(GNL):
+$(LIBGNL):
 	$(MAKE) -C $(GNL_DIR)
 
-$(LIBMLX): $(MLXDIR)/.git
-	$(MAKE) -C $(MLXDIR)
+$(LIBMLX): $(MLX_DIR)/.git
+	$(MAKE) -C $(MLX_DIR)
 
-$(MLXDIR)/.git:
+$(MLX_DIR)/.git:
 	git submodule update --init --recursive
 
 %.o: %.c
@@ -89,5 +85,5 @@ map1: all
 
 identifier: all
 	./$(MAKE) maps/map1
-	
+
 .PHONY: all clean fclean re norm

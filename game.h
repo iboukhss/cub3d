@@ -42,7 +42,7 @@ enum e_orientation
 typedef struct s_map
 {
 	char	*scene_path;
-	char	*grid[MAX_GRID_SIZE];
+	char	**grid;
 	int		width;
 	int		height;
 	char	spawn_orientation;

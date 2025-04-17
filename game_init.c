@@ -15,6 +15,7 @@
 #include <math.h>
 #include <stdlib.h>
 
+/*
 // Default hardcoded map
 static const char	*g_testmap[] = {
 	"        1111111111111111111111111",
@@ -40,7 +41,7 @@ static int	init_map(t_map *map)
 	map->width = 33;
 	map->height = 14;
 	return (0);
-}
+}*/
 
 static int	init_player(t_player *player)
 {
@@ -104,7 +105,7 @@ static int	init_debug_window(t_window *win, t_game *game)
 int	init_game(t_game *game)
 {
 	game->mlx_ctx = mlx_init();
-	init_map(&game->map);
+	//init_map(&game->map);
 	init_player(&game->player);
 	init_camera(&game->player.cam, &game->player);
 	init_main_window(&game->win0, game);

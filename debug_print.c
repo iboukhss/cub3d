@@ -17,7 +17,7 @@ void print_map(t_map map)
 	size_t	i;
 
 	i = 0;
-	while (i < MAX_GRID_SIZE && map.grid[i] != NULL)
+	while (i < MAX_GRID_ROW && map.grid[i] != NULL)
 	{
 		printf("%s", map.grid[i]);
 		i++;

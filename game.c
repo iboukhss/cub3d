@@ -218,8 +218,15 @@ int	main(int argc, char *argv[])
 {
 	t_game	game;
 
+	if (argc != 2)
+	{
+		print_error(1, "Incorrect number of parameters");
+		return (1);
+	}
 	(void)argc;
 	(void)argv;
+	if (get_scene(&game, argv[1]) != 0)
+		return(1);
 	init_game(&game);
 	create_window(&game.win0, game.mlx_ctx);
 	mlx_loop(game.mlx_ctx);

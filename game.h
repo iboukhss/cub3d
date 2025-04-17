@@ -17,7 +17,8 @@
 # define WIN_HEIGHT 800
 # define TILE_SIZE 24
 
-# define MAX_GRID_SIZE 255
+# define MAX_GRID_ROW 255
+# define MAX_GRID_COL 255
 
 #define WHITESPACE " "
 #define IDENTIFIER "NOEAWESOFC"
@@ -42,7 +43,7 @@ enum e_orientation
 typedef struct s_map
 {
 	char	*scene_path;
-	char	**grid;
+	char	grid[MAX_GRID_ROW][MAX_GRID_COL];
 	int		width;
 	int		height;
 	char	spawn_orientation;
@@ -80,6 +81,10 @@ typedef struct s_config
 	char	*SO;
 	char	*WE;
 	char	*EA;
+	t_image	texture_NO;      //store in void *img_ctx
+	t_image	texture_SO;
+	t_image	texture_WE;
+	t_image	texture_EA;
 	t_rgb	*floor;
 	t_rgb	*ceiling;
 	int 	done;

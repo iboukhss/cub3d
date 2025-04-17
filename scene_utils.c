@@ -59,9 +59,10 @@ int	read_scene(t_game *game, char *scene_path)
 		tmp = skip_whitespace(line);
 		if (*tmp == '\n')
 			continue ;
-		game->map.grid[i] = ft_substr(line, 0, ft_strlen(line));
+		ft_memcpy(game->map.grid[i], line, MAX_GRID_COL);
+		/*game->map.grid[i] = ft_substr(line, 0, ft_strlen(line));
 		if (game->map.grid[i] == NULL)
-			return (1); 					//free here the grid already allocated
+			return (1); 					//free here the grid already allocated*/
 		line = get_next_line(fd);
 		i++;
 	}
@@ -81,11 +82,7 @@ void	reset_config_map(t_config *config, t_map *map)
 	config->ceiling = NULL;
 	config->floor = NULL;
 	config->done = 0;
-	while (i < MAX_GRID_SIZE)
-	{
-		map->grid[i] = NULL;
-		i++;
-	}
+	(void)map;
 }
 
 int	get_scene(t_game *game, char *scene_path)

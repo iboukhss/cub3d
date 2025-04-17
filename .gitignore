@@ -1,1 +1,12 @@
 cub3d
+*.o
+*.d
+en.subject.pdf
+.vscode/
+tester/
+gnl/gnl.a
+gnl/a.out
+gnl/file.txt
+gnl/test_main.c
+libft/libft.a
+

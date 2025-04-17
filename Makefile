@@ -9,6 +9,10 @@ GNL = $(GNLDIR)/gnl.a
 LIBFT = $(LIBFTDIR)/libft.a
 
 SRCS = \
+	debug_print.c \
+	scene_utils.c \
+	element_parsing.c \
+	map_parsing.c \
 	game.c \
 	game_events.c \
 	game_init.c \
@@ -80,4 +84,10 @@ norm:
 vg: $(NAME)
 	valgrind --leak-check=full --track-origins=yes ./$<
 
+map1: all
+	./$(MAKE) maps/map1.cub
+
+identifier: all
+	./$(MAKE) maps/map1
+	
 .PHONY: all clean fclean re norm

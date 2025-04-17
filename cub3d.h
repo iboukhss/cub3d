@@ -16,6 +16,7 @@
 # define WIN_WIDTH 1280
 # define WIN_HEIGHT 800
 # define CELL_WIDTH 32
+# define MAX_GRID_SIZE 255
 
 #define WHITESPACE " "
 #define IDENTIFIER "NOEAWESOFC"
@@ -76,7 +77,7 @@ typedef struct s_rect
 typedef struct s_map
 {
 	char	*scene_path;
-	char	**grid;
+	char	*grid[MAX_GRID_SIZE];
 	int		width;
 	int		height;
 	char	spawn_orientation;
@@ -122,6 +123,7 @@ typedef struct s_config
 	char	*EA;
 	t_rgb	*floor;
 	t_rgb	*ceiling;
+	int 	done;
 }	t_config;
 
 // Main game structure
@@ -135,8 +137,11 @@ typedef struct s_game
 }	t_game;
 
 char	*get_next_line(int fd);
-void	print_error(int default_prompt, char *error_msg);
+char	*skip_whitespace(char *line);
+int		extract_param(t_config *config, char *line);
 int		get_scene(t_game *game, char *scene_path);
-int		read_scene(t_config *config, char *scene_path);
-
+int		read_scene(t_game *game, char *scene_path);
+void	print_error(int default_prompt, char *error_msg);
+void	print_config(t_config config);
+void	print_map(t_map map);
 #endif

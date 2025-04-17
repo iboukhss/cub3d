@@ -1,25 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libft.h                                            :+:      :+:    :+:   */
+/*   ft_strlcpy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dheck <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/05 18:40:51 by dheck             #+#    #+#             */
-/*   Updated: 2024/03/19 14:40:49 by dheck            ###   ########.fr       */
+/*   Created: 2024/02/27 15:26:38 by dheck             #+#    #+#             */
+/*   Updated: 2024/03/12 13:38:25 by dheck            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LIBFT_H
-# define LIBFT_H
+#include "libft.h"
 
-# include <stdint.h>
-# include <stdlib.h>
-# include <unistd.h>
+size_t	ft_strlcpy(char *dst, const char *src, size_t size)
+{
+	size_t	i;
 
-char	**ft_split(char const *s, char c);
-int     ft_atoi(const char *nptr);
-int		ft_strncmp(const char *s1, const char *s2, size_t n);
-size_t	ft_strlcpy(char *dst, const char *src, size_t size);
-
-#endif
+	i = 0;
+	if (size >= 1)
+	{
+		while (i < size - 1 && src[i] != '\0')
+		{
+			dst[i] = src[i];
+			i++;
+		}
+	}
+	if (size >= 1)
+		dst[i] = '\0';
+	while (src[i] != '\0')
+	{
+		i++;
+	}
+	return (i);
+}

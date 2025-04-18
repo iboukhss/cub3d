@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 int	check_cub_format(char *scene_path)
@@ -27,14 +28,25 @@ int	check_cub_format(char *scene_path)
 	return (1);
 }
 
+// NOTE(ismail): Make sure the grid is filled with zeroes before processing.
+static int	clear_map(t_map *map)
+{
+	for (int y = 0; y < MAX_GRID_ROW; y++)
+	{
+		for (int x = 0; x < MAX_GRID_COL; x++)
+		{
+			map->grid[y][x] = '\0';
+		}
+	}
+	return (0);
+}
+
 int	read_scene(t_game *game, char *scene_path)
 {
 	int		fd;
 	char	*line;
 	char	*tmp;
-	size_t	i;
 
-	i = 0;
 	fd = open(scene_path, O_RDONLY);
 	if (fd == -1)
 		return (1);
@@ -54,27 +66,44 @@ int	read_scene(t_game *game, char *scene_path)
 		line = get_next_line(fd);
 	}
 
+	int rows = 0;
+	int len = 0;
+	int maxlen = 0;	// variable to keep track of the longest map line
+
+	clear_map(&game->map);
+
+	// NOTE(ismail): get_next_line returns a line with \n included
+	// so the length is + 1 byte except when we are on the very last line.
+	// Therefore, my current fix is wrong because maxlen will possibly
+	// be 1 more than the actual width.
+	// Also need to fix get_next_line memory leaks.
+
 	while (line != NULL)
 	{
 		tmp = skip_whitespace(line);
 		if (*tmp == '\n')
 			continue ;
-		ft_memcpy(game->map.grid[i], line, MAX_GRID_COL);
+		len = strnlen(line, MAX_GRID_COL - 1);
+		if (len > maxlen)
+		{
+			maxlen = len;
+		}
+		ft_memcpy(game->map.grid[rows], line, len + 1);
 		/*game->map.grid[i] = ft_substr(line, 0, ft_strlen(line));
 		if (game->map.grid[i] == NULL)
 			return (1); 					//free here the grid already allocated*/
 		line = get_next_line(fd);
-		i++;
+		rows++;
 	}
+	game->map.width = maxlen;
+	game->map.height = rows;
+	printf("maxlen: %d\n", maxlen);
 	close(fd);
 	return (0);
 }
 
 void	reset_config_map(t_config *config, t_map *map)
 {
-	size_t	i;
-
-	i = 0;
 	config->NO = NULL;
 	config->SO = NULL;
 	config->WE = NULL;
@@ -96,5 +125,3 @@ int	get_scene(t_game *game, char *scene_path)
 	print_map(game->map);
 	return (0);
 }
-
-

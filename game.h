@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:19:47 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/17 11:33:22 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/18 17:30:37 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # define WIN_HEIGHT 800
 # define TILE_SIZE 24
 
+// 255*255 is approx. 64 kB
 # define MAX_GRID_ROW 255
 # define MAX_GRID_COL 255
 
@@ -36,17 +37,13 @@ enum e_orientation
 	SOUTH = 270,
 };
 
-// NOTE(ismail): Make grid a null-terminated array of null-terminated strings.
-// This will help us avoid segfaults and out-of-bounds array access.
-// If we could make the map a rectangle of dimensions width x height that would
-// also be great also. Holes in the map could be padded with spaces for example.
 typedef struct s_map
 {
 	char	*scene_path;
 	char	grid[MAX_GRID_ROW][MAX_GRID_COL];
 	int		width;
 	int		height;
-	char	spawn_orientation;
+	char	spawn_orientation;		// not needed anymore, inside t_player
 }	t_map;
 
 typedef struct s_camera
@@ -77,17 +74,19 @@ typedef struct s_rgb
 // This should hold the texture configuration data. Didn't look at this yet.
 typedef struct s_config
 {
-	char	*NO;
-	char	*SO;
-	char	*WE;
-	char	*EA;
-	t_image	texture_NO;      //store in void *img_ctx
-	t_image	texture_SO;
-	t_image	texture_WE;
-	t_image	texture_EA;
-	t_rgb	*floor;
-	t_rgb	*ceiling;
-	int 	done;
+	char		*NO;
+	char		*SO;
+	char		*WE;
+	char		*EA;
+	t_image		texture_NO;      // store in void *img_ctx
+	t_image		texture_SO;
+	t_image		texture_WE;
+	t_image		texture_EA;
+	t_rgb		*floor;
+	t_rgb		*ceiling;
+	uint32_t	floor_color;	// can store colors inside a single 32 bit
+	uint32_t	ceil_color;		// integer with using rgb_to_hex()
+	int			done;
 }	t_config;
 
 // Main game structure

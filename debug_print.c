@@ -14,17 +14,17 @@ void print_config(t_config config)
 
 void print_map(t_map map)
 {
-	size_t	i;
+	int	i;
 
 	i = 0;
-	while (i < MAX_GRID_ROW && map.grid[i] != NULL)
+	while (i < MAX_GRID_ROW && i < map.height)
 	{
 		printf("%s", map.grid[i]);
 		i++;
 	}
 }
 
-void    print_error(int default_prompt, char* error_msg)
+void    print_error(int default_prompt, char *error_msg)
 {
     if (default_prompt == 1)
         printf("Error\n");

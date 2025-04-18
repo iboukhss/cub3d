@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:29:38 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/11 16:54:22 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/18 17:11:08 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@ static int	draw_map(t_image *frame, t_map map)
 {
 	t_rect	tile;
 
-	for (int y = 0; map.grid[y] != NULL && y < map.height; y++)
+	for (int y = 0; y < map.height; y++)
 	{
-		for (int x = 0; map.grid[y][x] != '\0' && x < map.width; x++)
+		for (int x = 0; x < map.width; x++)
 		{
 			tile.x = x * TILE_SIZE;
 			tile.y = y * TILE_SIZE;
@@ -30,13 +30,13 @@ static int	draw_map(t_image *frame, t_map map)
 			{
 				fill_rect(frame, tile, 0xFFFFFF);
 			}
-			else if (map.grid[y][x] == ' ')
+			else if (map.grid[y][x] == '0')
 			{
-				fill_rect(frame, tile, 0x808080);
+				fill_rect(frame, tile, 0x000000);
 			}
 			else
 			{
-				fill_rect(frame, tile, 0x000000);
+				fill_rect(frame, tile, 0x808080);
 			}
 		}
 	}
@@ -223,8 +223,6 @@ int	main(int argc, char *argv[])
 		print_error(1, "Incorrect number of parameters");
 		return (1);
 	}
-	(void)argc;
-	(void)argv;
 	if (get_scene(&game, argv[1]) != 0)
 		return(1);
 	init_game(&game);

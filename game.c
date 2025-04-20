@@ -14,6 +14,7 @@
 
 #include <math.h>
 
+// Draws the tile map
 static int	draw_map(t_image *frame, t_map map)
 {
 	t_rect	tile;
@@ -43,23 +44,15 @@ static int	draw_map(t_image *frame, t_map map)
 	return (0);
 }
 
-static t_rect	player_to_rect(t_player *player, float raster_factor)
-{
-	t_rect	rect;
-
-	rect.x = (player->cam.pos.x - player->width / 2) * raster_factor;
-	rect.y = (player->cam.pos.y - player->width / 2) * raster_factor;;
-	rect.w = player->width * raster_factor;
-	rect.h = player->width * raster_factor;
-	return (rect);
-}
-
-// Draws the player's hitbox
+// Draws the player's position
 static int	draw_player(t_image *frame, t_player *player)
 {
 	t_rect	hitbox;
 
-	hitbox = player_to_rect(player, TILE_SIZE);
+	hitbox.x = (player->cam.pos.x - (player->width / 2)) * TILE_SIZE;
+	hitbox.y = (player->cam.pos.y - (player->width / 2)) * TILE_SIZE;
+	hitbox.w = player->width * TILE_SIZE;
+	hitbox.h = player->width * TILE_SIZE;
 	fill_rect(frame, hitbox, 0xFF0000);
 	return (0);
 }
@@ -162,6 +155,16 @@ static int	draw_floor_and_ceiling(t_image *img)
 	return (0);
 }
 
+static int	refresh_frame(t_window *win, void *mlx_ctx)
+{
+	if (!win->win_ctx)
+	{
+		return (1);
+	}
+	mlx_put_image_to_window(mlx_ctx, win->win_ctx, win->frame.img_ctx, 0, 0);
+	return (0);
+}
+
 // NOTE(ismail): Work in progress. Heavy refactoring incoming.
 int	render_scene(void *param)
 {
@@ -207,10 +210,8 @@ int	render_scene(void *param)
 			draw_line_vertical(&game->win0.frame, vert_line, 0x0000FF / 2);
 		}
 	}
-	if (game->win1.win_ctx)
-		mlx_put_image_to_window(game->mlx_ctx, game->win1.win_ctx, game->win1.frame.img_ctx, 0, 0);
-	if (game->win0.win_ctx)
-		mlx_put_image_to_window(game->mlx_ctx, game->win0.win_ctx, game->win0.frame.img_ctx, 0, 0);
+	refresh_frame(&game->win0, game->mlx_ctx);
+	refresh_frame(&game->win1, game->mlx_ctx);
 	return (0);
 }
 

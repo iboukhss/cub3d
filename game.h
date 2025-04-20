@@ -13,9 +13,9 @@
 #ifndef GAME_H
 # define GAME_H
 
-# define WIN_WIDTH 1280
-# define WIN_HEIGHT 800
-# define TILE_SIZE 24
+# define WIN_WIDTH 960
+# define WIN_HEIGHT 600
+# define TILE_SIZE 16
 
 // 255*255 is approx. 64 kB
 # define MAX_GRID_ROW 255

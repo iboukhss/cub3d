@@ -52,6 +52,17 @@ static int	init_player(t_player *player)
 	return (0);
 }
 
+static int	init_config(t_config *conf)
+{
+	conf->north_color = COLOR_GREEN;
+	conf->south_color = COLOR_YELLOW;
+	conf->east_color = COLOR_BLUE;
+	conf->west_color = COLOR_RED;
+	conf->floor_color = COLOR_DARK_GRAY;
+	conf->ceil_color = COLOR_DARK_GRAY / 2;
+	return (0);
+}
+
 // NOTE(ismail): Y-axis is inverted compared to the regular unit circle.
 // Be mindful when dealing with rotations.
 static int	init_camera(t_camera *cam, t_player *player)
@@ -108,6 +119,7 @@ int	init_game(t_game *game)
 	//init_map(&game->map);
 	init_player(&game->player);
 	init_camera(&game->player.cam, &game->player);
+	init_config(&game->config);
 	init_main_window(&game->win0, game);
 	init_debug_window(&game->win1, game);
 	return (0);

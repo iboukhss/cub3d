@@ -84,6 +84,10 @@ typedef struct s_config
 	t_image		texture_EA;
 	t_rgb		*floor;
 	t_rgb		*ceiling;
+	uint32_t	north_color;	// temporary colors for NO,WE,SO,EA
+	uint32_t	south_color;
+	uint32_t	east_color;
+	uint32_t	west_color;
 	uint32_t	floor_color;	// can store colors inside a single 32 bit
 	uint32_t	ceil_color;		// integer with using rgb_to_hex()
 	int			done;

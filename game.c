@@ -45,23 +45,38 @@ static int	draw_map(t_image *frame, t_map map)
 }
 
 // Draws the player's position
-static int	draw_player(t_image *frame, t_player *player)
+static int	draw_player(t_image *frame, t_player player)
 {
 	t_rect	hitbox;
 
-	hitbox.x = (player->cam.pos.x - (player->width / 2)) * TILE_SIZE;
-	hitbox.y = (player->cam.pos.y - (player->width / 2)) * TILE_SIZE;
-	hitbox.w = player->width * TILE_SIZE;
-	hitbox.h = player->width * TILE_SIZE;
+	hitbox.x = (player.cam.pos.x - (player.width / 2)) * TILE_SIZE;
+	hitbox.y = (player.cam.pos.y - (player.width / 2)) * TILE_SIZE;
+	hitbox.w = player.width * TILE_SIZE;
+	hitbox.h = player.width * TILE_SIZE;
 	fill_rect(frame, hitbox, 0xFF0000);
 	return (0);
 }
 
-// Returns the perpendicular distance from the ray intersection to the camera
-// plane
-// Negative distance means Y side ray hit and positive means X side ray hit to
-// help with shading.
-static float	cast_ray(t_ray2d ray, t_map map)
+static int	draw_floor_and_ceiling(t_image *frame, t_config conf)
+{
+	t_rect	floor;
+	t_rect	ceil;
+
+	ceil.x = 0;
+	ceil.y = 0;
+	ceil.w = frame->width;
+	ceil.h = frame->height / 2;
+	floor.x = 0;
+	floor.y = ceil.h;
+	floor.w = frame->width;
+	floor.h = frame->height - ceil.h;
+	fill_rect(frame, ceil, conf.ceil_color);
+	fill_rect(frame, floor, conf.floor_color);
+	return (0);
+}
+
+// See: https://lodev.org/cgtutor/raycasting.html#Untextured_Raycaster_
+static int	cast_ray(float *perp_wall_dist, t_ray2d ray, t_map map)
 {
 	int		map_x = (int)ray.pos.x;
 	int		map_y = (int)ray.pos.y;
@@ -74,9 +89,6 @@ static float	cast_ray(t_ray2d ray, t_map map)
 
 	int		step_x;
 	int		step_y;
-
-	int		side;
-	float	perp_wall_dist;
 
 	if (ray.dir.x < 0)
 	{
@@ -98,34 +110,37 @@ static float	cast_ray(t_ray2d ray, t_map map)
 		step_y = 1;
 		side_dist_y = (map_y + 1.0f - ray.pos.y) * delta_dist_y;
 	}
+
+	enum e_orientation side = -1;
+
 	while (1)
 	{
 		if (side_dist_x < side_dist_y)
 		{
 			side_dist_x += delta_dist_x;
 			map_x += step_x;
-			side = 0;
+			side = (step_x > 0) ? EAST : WEST;
 		}
 		else
 		{
 			side_dist_y += delta_dist_y;
 			map_y += step_y;
-			side = 1;
+			side = (step_y > 0) ? SOUTH : NORTH;
 		}
 		if (map_x < 0 || map_x >= map.width || map_y < 0 || map_y >= map.height || map.grid[map_y][map_x] == '1')
 		{
 			break ;
 		}
 	}
-	if (side == 0)
+	if (side == EAST || side == WEST)
 	{
-		perp_wall_dist = side_dist_x - delta_dist_x;
+		*perp_wall_dist = side_dist_x - delta_dist_x;
 	}
-	else
+	else if (side == NORTH || side == SOUTH)
 	{
-		perp_wall_dist = -(side_dist_y - delta_dist_y);
+		*perp_wall_dist = side_dist_y - delta_dist_y;
 	}
-	return (perp_wall_dist);
+	return (side);
 }
 
 int	draw_line_vertical(t_image *img, t_line line, uint32_t color)
@@ -137,21 +152,49 @@ int	draw_line_vertical(t_image *img, t_line line, uint32_t color)
 	return (0);
 }
 
-static int	draw_floor_and_ceiling(t_image *img)
+static int	do_raycasting(t_game *game)
 {
-	t_rect	floor;
-	t_rect	ceil;
+	t_camera	cam;
+	t_config	conf;
+	float		camera_x;
+	t_ray2d		ray;
+	t_line		line;
+	t_line		vert_line;
 
-	ceil.x = 0;
-	ceil.y = 0;
-	ceil.w = img->width;
-	ceil.h = img->height / 2;
-	floor.x = 0;
-	floor.y = ceil.h;
-	floor.w = img->width;
-	floor.h = img->height - ceil.h;
-	fill_rect(img, ceil, 0xA9A9A9 * 2);
-	fill_rect(img, floor, 0xA9A9A9);
+	cam = game->player.cam;
+	conf = game->config;
+	for (int x = 0; x < WIN_WIDTH; x += 1)
+	{
+		camera_x = ((2.0f * x) / (float)WIN_WIDTH) - 1.0f;
+		ray.pos.x = cam.pos.x;
+		ray.pos.y = cam.pos.y;
+		ray.dir.x = cam.dir.x + cam.plane.x * camera_x;
+		ray.dir.y = cam.dir.y + cam.plane.y * camera_x;
+		float perp_wall_dist = 0;
+		enum e_orientation side = 0;
+		side = cast_ray(&perp_wall_dist, ray, game->map);
+		// Trace ray on the minimap
+		line = ray2d_to_line(ray, perp_wall_dist, TILE_SIZE);
+		draw_line(&game->win1.frame, line, 0xFFFF00);
+		// Very convoluted logic to shade walls
+		int column_height = (int)(WIN_HEIGHT / perp_wall_dist);
+		int draw_start = -column_height / 2 + WIN_HEIGHT / 2;
+		int draw_end = column_height / 2 + WIN_HEIGHT / 2;
+		if (draw_start < 0) draw_start = 0;
+		if (draw_end >= WIN_HEIGHT) draw_end = WIN_HEIGHT - 1;
+		vert_line.x0 = x;
+		vert_line.y0 = draw_start;
+		vert_line.x1 = x;
+		vert_line.y1 = draw_end;
+		if (side == NORTH)
+			draw_line_vertical(&game->win0.frame, vert_line, conf.north_color);
+		else if (side == SOUTH)
+			draw_line_vertical(&game->win0.frame, vert_line, conf.south_color);
+		else if (side == EAST)
+			draw_line_vertical(&game->win0.frame, vert_line, conf.east_color);
+		else if (side == WEST)
+			draw_line_vertical(&game->win0.frame, vert_line, conf.west_color);
+	}
 	return (0);
 }
 
@@ -169,47 +212,15 @@ static int	refresh_frame(t_window *win, void *mlx_ctx)
 int	render_scene(void *param)
 {
 	t_game	*game;
-	float	camera_x;
-	t_ray2d	ray;
-	float	perp_wall_dist;
-	t_line	line;
-	t_line	vert_line;
 
 	game = (t_game *)param;
+	// Draw background
 	draw_map(&game->win1.frame, game->map);
-	draw_player(&game->win1.frame, &game->player);
-	draw_floor_and_ceiling(&game->win0.frame);
-	for (int x = 0; x < WIN_WIDTH; x++)
-	{
-		// I think we could control the FOV here
-		camera_x = ((2.0f * x) / (float)WIN_WIDTH) - 1.0f;
-		ray.pos.x = game->player.cam.pos.x;
-		ray.pos.y = game->player.cam.pos.y;
-		ray.dir.x = game->player.cam.dir.x + game->player.cam.plane.x * camera_x;
-		ray.dir.y = game->player.cam.dir.y + game->player.cam.plane.y * camera_x;
-		perp_wall_dist = cast_ray(ray, game->map);
-		// Trace ray on the minimap
-		line = ray2d_to_line(ray, fabsf(perp_wall_dist), TILE_SIZE);
-		draw_line(&game->win1.frame, line, 0xFFFF00);
-		// Very convoluted logic to shade walls
-		int column_height = (int)(WIN_HEIGHT / fabsf(perp_wall_dist));
-		int draw_start = -column_height / 2 + WIN_HEIGHT / 2;
-		int draw_end = column_height / 2 + WIN_HEIGHT / 2;
-		if (draw_start < 0) draw_start = 0;
-		if (draw_end >= WIN_HEIGHT) draw_end = WIN_HEIGHT - 1;
-		vert_line.x0 = x;
-		vert_line.y0 = draw_start;
-		vert_line.x1 = x;
-		vert_line.y1 = draw_end;
-		if (perp_wall_dist > 0)
-		{
-			draw_line_vertical(&game->win0.frame, vert_line, 0x0000FF);
-		}
-		else
-		{
-			draw_line_vertical(&game->win0.frame, vert_line, 0x0000FF / 2);
-		}
-	}
+	draw_player(&game->win1.frame, game->player);
+	draw_floor_and_ceiling(&game->win0.frame, game->config);
+	// Draw foreground
+	do_raycasting(game);
+	// Refresh window frames
 	refresh_frame(&game->win0, game->mlx_ctx);
 	refresh_frame(&game->win1, game->mlx_ctx);
 	return (0);
@@ -228,6 +239,7 @@ int	main(int argc, char *argv[])
 		return(1);
 	init_game(&game);
 	create_window(&game.win0, game.mlx_ctx);
+	create_window(&game.win1, game.mlx_ctx);	// this is the minimap
 	mlx_loop(game.mlx_ctx);
 	destroy_game(&game);
 	return (0);

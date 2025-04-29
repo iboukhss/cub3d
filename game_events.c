@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 15:25:05 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/11 17:32:51 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/29 00:54:20 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	close_debug_window(void *param)
 	t_game	*game;
 
 	game = (t_game *)param;
-	destroy_window(&game->win1, game->mlx_ctx);
+	destroy_window(&game->debug, game->mlx_ctx);
 	return (0);
 }
 
@@ -44,7 +44,7 @@ int	keyrelease_main(int keysym, void *param)
 	}
 	if (keysym == XK_m || keysym == XK_F1)
 	{
-		create_window(&game->win1, game->mlx_ctx);
+		create_window(&game->debug, game->mlx_ctx);
 	}
 	return (0);
 }
@@ -76,7 +76,7 @@ static int	move_camera(t_camera *cam, float move_speed)
 	t_vec2d	move;
 	t_vec2d	dest;
 
-	move = vec2d_scale(cam->dir, move_speed);
+	move = vec2d_mul(cam->dir, move_speed);
 	dest = vec2d_add(cam->pos, move);
 	cam->pos = dest;
 	return (0);

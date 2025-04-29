@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:27:45 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/11 16:53:41 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/23 15:54:38 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,24 +104,21 @@ int	fill_rect(t_image *img, t_rect rect, uint32_t color)
 }
 
 // Using DDA to draw lines
-//
-// NOTE(ismail): It seems like sometimes lines are not rasterized properly,
-// esp. vertical lines. Minor issue.
 int	draw_line(t_image *img, t_line line, uint32_t color)
 {
 	float	dx = line.x1 - line.x0;
 	float	dy = line.y1 - line.y0;
 	int		steps = fabsf(dx) > fabsf(dy) ? fabsf(dx) : fabsf(dy);
 
-	float	x_inc = dx / steps;
-	float	y_inc = dy / steps;
+	float	x_inc = dx / (float)steps;
+	float	y_inc = dy / (float)steps;
 
 	float	x = line.x0;
 	float	y = line.y0;
 
 	for (int i = 0; i <= steps; i++)
 	{
-		put_pixel(img, roundf(x), roundf(y), color);
+		put_pixel(img, (int)(x + 0.5f), (int)(y + 0.5f), color);
 		x += x_inc;
 		y += y_inc;
 	}

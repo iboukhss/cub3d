@@ -56,12 +56,12 @@ int	read_scene(t_game *game, char *scene_path)
 		print_error(1, "INVALID Map. Map is empty.");
 		return (1);
 	}
-	while (line != NULL && game->config.done == 0) //looping over scene to retrieve 6 elements
+	while (line != NULL && game->cfg.done == 0) //looping over scene to retrieve 6 elements
 	{	
 		tmp = skip_whitespace(line);
 		if (*tmp == '\n')
 			continue ;
-		if(extract_param(&game->config, line) != 0)
+		if(extract_param(&game->cfg, line) != 0)
 			return (1);
 		line = get_next_line(fd);
 	}
@@ -118,10 +118,10 @@ int	get_scene(t_game *game, char *scene_path)
 {
 	if (check_cub_format(scene_path) != 0)
 		return (1);
-	reset_config_map(&game->config, &game->map);
+	reset_config_map(&game->cfg, &game->map);
 	if (read_scene(game, scene_path) != 0)
 		return (1);
-	print_config(game->config);
+	print_config(game->cfg);
 	print_map(game->map);
 	return (0);
 }

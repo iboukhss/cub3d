@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:19:47 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/18 17:30:37 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/29 19:32:38 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,22 @@
 
 # include <stddef.h>
 
-enum e_orientation
+typedef enum e_orientation
 {
-	EAST = 0,
-	NORTH = 90,
-	WEST = 180,
-	SOUTH = 270,
-};
+	ORIENT_UNKNOWN = -1,
+	ORIENT_EAST = 0,
+	ORIENT_NORTH = 90,
+	ORIENT_WEST = 180,
+	ORIENT_SOUTH = 270,
+}	t_orientation;
+
+typedef struct s_ray
+{
+	t_vec2d			pos;
+	t_vec2d			dir;
+	float			len;
+	t_orientation	side;
+}	t_ray;
 
 typedef struct s_map
 {
@@ -57,13 +66,14 @@ typedef struct s_camera
 
 typedef struct s_player
 {
-	int					start_x;
-	int					start_y;
-	enum e_orientation	orientation;
-	float				width;
-	t_camera			cam;
+	int				start_x;
+	int				start_y;
+	t_orientation	spawn_orientation;
+	float			width;
+	t_camera		cam;
 }	t_player;
 
+// Deprecated
 typedef struct s_rgb
 {
 	int	red;
@@ -94,16 +104,14 @@ typedef struct s_config
 }	t_config;
 
 // Main game structure
-// win0: Main game window
-// win1: Debug view
 typedef struct s_game
 {
 	void		*mlx_ctx;
-	t_window	win0;
-	t_window	win1;
+	t_window	main;
+	t_window	debug;
 	t_map		map;
 	t_player	player;
-	t_config	config;
+	t_config	cfg;
 }	t_game;
 
 int	init_game(t_game *game);

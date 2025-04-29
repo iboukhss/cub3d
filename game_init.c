@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 23:17:42 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/11 17:28:57 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/04/29 19:32:38 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ static int	init_player(t_player *player)
 {
 	player->start_x = 4;
 	player->start_y = 12;
-	player->orientation = NORTH;
+	player->spawn_orientation = ORIENT_NORTH;
 	player->width = 0.5;
 	return (0);
 }
@@ -67,7 +67,7 @@ static int	init_config(t_config *conf)
 // Be mindful when dealing with rotations.
 static int	init_camera(t_camera *cam, t_player *player)
 {
-	cam->angle_deg = player->orientation;
+	cam->angle_deg = player->spawn_orientation;
 	cam->angle_rad = rad(cam->angle_deg);
 	cam->pos = vec2d_init(player->start_x + 0.5f, player->start_y + 0.5f);
 	cam->dir = vec2d_init(cosf(cam->angle_rad), -sinf(cam->angle_rad));
@@ -119,16 +119,16 @@ int	init_game(t_game *game)
 	//init_map(&game->map);
 	init_player(&game->player);
 	init_camera(&game->player.cam, &game->player);
-	init_config(&game->config);
-	init_main_window(&game->win0, game);
-	init_debug_window(&game->win1, game);
+	init_config(&game->cfg);
+	init_main_window(&game->main, game);
+	init_debug_window(&game->debug, game);
 	return (0);
 }
 
 int	destroy_game(t_game *game)
 {
-	destroy_window(&game->win0, game->mlx_ctx);
-	destroy_window(&game->win1, game->mlx_ctx);
+	destroy_window(&game->main, game->mlx_ctx);
+	destroy_window(&game->debug, game->mlx_ctx);
 	mlx_destroy_display(game->mlx_ctx);
 	free(game->mlx_ctx);
 	return (0);

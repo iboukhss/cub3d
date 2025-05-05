@@ -28,19 +28,6 @@ int	check_cub_format(char *scene_path)
 	return (1);
 }
 
-// NOTE(ismail): Make sure the grid is filled with zeroes before processing.
-static int	clear_map(t_map *map)
-{
-	for (int y = 0; y < MAX_GRID_ROW; y++)
-	{
-		for (int x = 0; x < MAX_GRID_COL; x++)
-		{
-			map->grid[y][x] = '\0';
-		}
-	}
-	return (0);
-}
-
 int	read_scene(t_game *game, char *scene_path)
 {
 	int		fd;
@@ -60,9 +47,14 @@ int	read_scene(t_game *game, char *scene_path)
 	{	
 		tmp = skip_whitespace(line);
 		if (*tmp == '\n')
+		{
+			free(line);
+			line = get_next_line(fd);
 			continue ;
+		}
 		if(extract_param(&game->cfg, line) != 0)
 			return (1);
+		free(line);	
 		line = get_next_line(fd);
 	}
 
@@ -70,7 +62,7 @@ int	read_scene(t_game *game, char *scene_path)
 	int len = 0;
 	int maxlen = 0;	// variable to keep track of the longest map line
 
-	clear_map(&game->map);
+	reset_map(&game->map);
 
 	// NOTE(ismail): get_next_line returns a line with \n included
 	// so the length is + 1 byte except when we are on the very last line.
@@ -78,17 +70,26 @@ int	read_scene(t_game *game, char *scene_path)
 	// be 1 more than the actual width.
 	// Also need to fix get_next_line memory leaks.
 
+	char *pos_nl;
 	while (line != NULL)
 	{
 		tmp = skip_whitespace(line);
 		if (*tmp == '\n')
+		{
+			free(line);
+			line = get_next_line(fd);
 			continue ;
+		}
+		pos_nl = ft_strchr(line, '\n');
+		if (pos_nl != NULL)
+			line[pos_nl - line] = '\0';
 		len = strnlen(line, MAX_GRID_COL - 1);
 		if (len > maxlen)
 		{
 			maxlen = len;
 		}
 		ft_memcpy(game->map.grid[rows], line, len + 1);
+		free(line);
 		/*game->map.grid[i] = ft_substr(line, 0, ft_strlen(line));
 		if (game->map.grid[i] == NULL)
 			return (1); 					//free here the grid already allocated*/
@@ -102,7 +103,7 @@ int	read_scene(t_game *game, char *scene_path)
 	return (0);
 }
 
-void	reset_config_map(t_config *config, t_map *map)
+void	reset_config(t_config *config)
 {
 	config->NO = NULL;
 	config->SO = NULL;
@@ -111,17 +112,18 @@ void	reset_config_map(t_config *config, t_map *map)
 	config->ceiling = NULL;
 	config->floor = NULL;
 	config->done = 0;
-	(void)map;
 }
 
 int	get_scene(t_game *game, char *scene_path)
 {
 	if (check_cub_format(scene_path) != 0)
 		return (1);
-	reset_config_map(&game->cfg, &game->map);
+	reset_config(&game->cfg);
 	if (read_scene(game, scene_path) != 0)
 		return (1);
-	print_config(game->cfg);
-	print_map(game->map);
+	//print_config(game->cfg);
+	//print_map(game->map);
+	if (validate_map(game) != 0)
+		return (1);
 	return (0);
 }

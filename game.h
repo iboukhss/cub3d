@@ -110,6 +110,7 @@ typedef struct s_game
 	t_window	main;
 	t_window	debug;
 	t_map		map;
+	t_map		tmp_map;			//used by flood_fill algo
 	t_player	player;
 	t_config	cfg;
 }	t_game;
@@ -132,9 +133,15 @@ char	*get_next_line(int fd);
 char	*skip_whitespace(char *line);
 int		extract_param(t_config *config, char *line);
 int		get_scene(t_game *game, char *scene_path);
+int		load_all_textures(t_game *game);
+int		load_image(t_game *game, t_image *texture_img, char *path);
 int		read_scene(t_game *game, char *scene_path);
+int		reset_map(t_map *map);
+int		validate_map(t_game *game);
+void	clone_map(t_map *src, t_map *dest);
 void	print_error(int default_prompt, char *error_msg);
 void	print_config(t_config config);
 void	print_map(t_map map);
+void	set_player_pos(t_game *game, char orientation, int y, int x);
 
 #endif // GAME_H

@@ -22,6 +22,7 @@ void print_map(t_map map)
 		printf("%s", map.grid[i]);
 		i++;
 	}
+	printf("\n");
 }
 
 void    print_error(int default_prompt, char *error_msg)

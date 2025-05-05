@@ -117,6 +117,8 @@ int	init_game(t_game *game)
 {
 	game->mlx_ctx = mlx_init();
 	//init_map(&game->map);
+	if (load_all_textures(game) != 0)
+		return (1);
 	init_player(&game->player);
 	init_camera(&game->player.cam, &game->player);
 	init_config(&game->cfg);

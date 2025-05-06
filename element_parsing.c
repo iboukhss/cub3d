@@ -47,21 +47,17 @@ int	validate_identifier(char *type_identifier)
 
 //QUESTION : is 91   ,    45,0 a valid input ?
 
-t_rgb *get_rgb(char *color_code)
+void get_rgb(t_rgb *rgb, char *color_code)
 {
-	t_rgb	*rgb;
 	char	**split;
 	size_t	i;
 	
 	i = 0;
 	if (color_code == NULL)
-		return (NULL);
-	rgb = malloc(sizeof(t_rgb));
-	if (!rgb)
-		return (NULL);
+		return ;
 	split = ft_split(color_code, ',');
 	if (!split)
-		return (free(rgb), NULL);
+		return ;
 	rgb->red = ft_atoi(split[0]);
 	rgb->green = ft_atoi(split[1]);
 	rgb->blue = ft_atoi(split[2]);
@@ -71,7 +67,6 @@ t_rgb *get_rgb(char *color_code)
 		i++;
 	}
 	free(split);
-	return (rgb);
 }
 
 int	update_config(t_config *config, char *type_identifier, char *information)
@@ -85,13 +80,13 @@ int	update_config(t_config *config, char *type_identifier, char *information)
 	else if (ft_strncmp(type_identifier, "EA", 2) == 0)
 		config->EA = information;
 	else if (*type_identifier == 'F')
-		config->floor = get_rgb(information);
+		get_rgb(&config->floor, information);
 	else if (*type_identifier == 'C')
-		config->ceiling = get_rgb(information);
+		get_rgb(&config->floor, information);
 	else
 		return (1);
 	if (config->NO != NULL && config->SO != NULL && config->EA != NULL && config->WE != NULL
-		&& config->ceiling != NULL && config->floor != NULL)
+		&& config->ceiling.blue != -1 && config->floor.blue != -1)
 			config->done = 1;
 	return (0);
 }
@@ -111,11 +106,11 @@ int extract_param(t_config *config, char *line)
 		return (free(type_identifier), 1);
 	line = skip_whitespace(line);
 	if (*line == '\n')
-		return (print_error(1, "INVALID information. Path or rgb code missing after identifier"), 1); //check if we cannot return the file row on which the error occurs
+		return (free(type_identifier), print_error(1, "INVALID information. Path or rgb code missing after identifier"), 1); //check if we cannot return the file row on which the error occurs
 	line = get_element(line, &information);
 	if (!information)
 		return (free(type_identifier), 1);
 	if (update_config(config, type_identifier, information) != 0)
-		return (free(type_identifier), 1);
-	return (free(type_identifier), 0);
+		return (free(type_identifier), free(information), 1);
+	return (free(type_identifier), free(information), 0);
 }

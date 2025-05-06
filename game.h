@@ -92,8 +92,8 @@ typedef struct s_config
 	t_image		texture_SO;
 	t_image		texture_WE;
 	t_image		texture_EA;
-	t_rgb		*floor;
-	t_rgb		*ceiling;
+	t_rgb		floor;
+	t_rgb		ceiling;
 	uint32_t	north_color;	// temporary colors for NO,WE,SO,EA
 	uint32_t	south_color;
 	uint32_t	east_color;

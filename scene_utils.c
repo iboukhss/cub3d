@@ -53,7 +53,7 @@ int	read_scene(t_game *game, char *scene_path)
 			continue ;
 		}
 		if(extract_param(&game->cfg, line) != 0)
-			return (1);
+			return (free(line), 1);
 		free(line);	
 		line = get_next_line(fd);
 	}
@@ -109,8 +109,12 @@ void	reset_config(t_config *config)
 	config->SO = NULL;
 	config->WE = NULL;
 	config->EA = NULL;
-	config->ceiling = NULL;
-	config->floor = NULL;
+	config->ceiling.blue = -1;
+	config->ceiling.green = -1;
+	config->ceiling.red = -1;
+	config->floor.blue = -1;
+	config->floor.green = -1;
+	config->floor.red = -1;
 	config->done = 0;
 }
 

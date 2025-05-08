@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 23:17:42 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/29 19:32:38 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/08 13:54:39 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,24 +52,69 @@ static int	init_player(t_player *player)
 	return (0);
 }
 
-static int	init_config(t_config *conf)
+/* XPM */
+static const char *const g_sample_xpm[] = {
+"32 32 10 1",
+" 	c None",
+".	c #2020FF",
+"+	c #8080FF",
+"@	c #C0C0FF",
+"#	c #FFFF00",
+"$	c #FFFF80",
+"%	c #FF2020",
+"&	c #FF4848",
+"*	c #FFFFDF",
+"=	c #FFC0C0",
+"                                ",
+"                                ",
+"                                ",
+"                                ",
+"                                ",
+"        ..............          ",
+"        .++++++++++++.          ",
+"        .++++++++++++.          ",
+"        .+@@+++++++++.          ",
+"        .+@@+++++++++.          ",
+"        .+@@+++++++++.          ",
+"        .+@@++++++##############",
+"        .+@@++++++#$$$$$$$$$$$$#",
+"%%%%%%%%.+@@++++++#$$$$$$$$$$$$#",
+"%&&&&&&&.+@@++++++#$**$$$$$$$$$#",
+"%&&&&&&&.+@@++++++#$**$$$$$$$$$#",
+"%&==&&&&.+++++++++#$**$$$$$$$$$#",
+"%&==&&&&.+++++++++#$**$$$$$$$$$#",
+"%&==&&&&..........#$**$$$$$$$$$#",
+"%&==&&&&&&&&&%    #$**$$$$$$$$$#",
+"%&==&&&&&&&&&%    #$**$$$$$$$$$#",
+"%&==&&&&&&&&&%    #$**$$$$$$$$$#",
+"%&==&&&&&&&&&%    #$$$$$$$$$$$$#",
+"%&==&&&&&&&&&%    #$$$$$$$$$$$$#",
+"%&&&&&&&&&&&&%    ##############",
+"%&&&&&&&&&&&&%                  ",
+"%%%%%%%%%%%%%%                  ",
+"                                ",
+"                                ",
+"                                ",
+"                                ",
+"                                "
+};
+
+static int	init_config(t_config *cfg, void *mlx_ctx)
 {
-	conf->north_color = COLOR_GREEN;
-	conf->south_color = COLOR_YELLOW;
-	conf->east_color = COLOR_BLUE;
-	conf->west_color = COLOR_RED;
-	conf->floor_color = COLOR_DARK_GRAY;
-	conf->ceil_color = COLOR_DARK_GRAY / 2;
+	load_xpm_file(&cfg->texture_EA, cfg->EA, mlx_ctx);
+	load_xpm_file(&cfg->texture_WE, cfg->WE, mlx_ctx);
+	load_xpm_file(&cfg->texture_NO, cfg->NO, mlx_ctx);
+	load_xpm_file(&cfg->texture_SO, cfg->SO, mlx_ctx);
 	return (0);
 }
 
 // NOTE(ismail): Y-axis is inverted compared to the regular unit circle.
 // Be mindful when dealing with rotations.
-static int	init_camera(t_camera *cam, t_player *player)
+static int	init_camera(t_camera *cam, t_player player)
 {
-	cam->angle_deg = player->spawn_orientation;
+	cam->angle_deg = player.spawn_orientation;
 	cam->angle_rad = rad(cam->angle_deg);
-	cam->pos = vec2d_init(player->start_x + 0.5f, player->start_y + 0.5f);
+	cam->pos = vec2d_init(player.start_x + 0.5f, player.start_y + 0.5f);
 	cam->dir = vec2d_init(cosf(cam->angle_rad), -sinf(cam->angle_rad));
 	cam->plane = vec2d_init(sinf(cam->angle_rad), cosf(cam->angle_rad));
 	return (0);
@@ -117,11 +162,9 @@ int	init_game(t_game *game)
 {
 	game->mlx_ctx = mlx_init();
 	//init_map(&game->map);
-	if (load_all_textures(game) != 0)
-		return (1);
 	init_player(&game->player);
-	init_camera(&game->player.cam, &game->player);
-	init_config(&game->cfg);
+	init_camera(&game->player.cam, game->player);
+	init_config(&game->cfg, game->mlx_ctx);
 	init_main_window(&game->main, game);
 	init_debug_window(&game->debug, game);
 	return (0);

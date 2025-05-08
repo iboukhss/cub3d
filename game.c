@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:29:38 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/29 19:24:13 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/08 13:36:30 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ static int	draw_player(t_image *frame, t_player player)
 	return (0);
 }
 
-static int	draw_floor_and_ceiling(t_image *frame, t_config conf)
+static int	draw_floor_and_ceiling(t_image *frame, const t_config *conf)
 {
 	t_rect	floor;
 	t_rect	ceil;
@@ -76,8 +76,8 @@ static int	draw_floor_and_ceiling(t_image *frame, t_config conf)
 	floor.y = ceil.h;
 	floor.w = frame->width;
 	floor.h = frame->height - ceil.h;
-	fill_rect(frame, ceil, conf.ceil_color);
-	fill_rect(frame, floor, conf.floor_color);
+	fill_rect(frame, ceil, conf->ceil_color);
+	fill_rect(frame, floor, conf->floor_color);
 	return (0);
 }
 
@@ -164,37 +164,11 @@ static int	draw_ray_on_minimap(t_game *game, t_ray ray)
 	return (0);
 }
 
-static uint32_t	pick_side_color(t_game *game, t_ray ray)
-{
-	if (ray.side == ORIENT_SOUTH)
-	{
-		return (game->cfg.south_color);
-	}
-	else if (ray.side == ORIENT_NORTH)
-	{
-		return (game->cfg.north_color);
-	}
-	else if (ray.side == ORIENT_EAST)
-	{
-		return (game->cfg.east_color);
-	}
-	else if (ray.side == ORIENT_WEST)
-	{
-		return (game->cfg.west_color);
-	}
-	else
-	{
-		return (COLOR_BLACK);
-	}
-}
-
 static int	draw_wall_column(t_game *game, int col_x, t_ray ray)
 {
 	int			column_height;
 	int			draw_start;
 	int			draw_end;
-	t_line		vert_line;
-	uint32_t	color;
 
 	column_height = (int)(WIN_HEIGHT / ray.len);
 	draw_start = -column_height / 2 + WIN_HEIGHT / 2;
@@ -207,12 +181,56 @@ static int	draw_wall_column(t_game *game, int col_x, t_ray ray)
 	{
 		draw_end = WIN_HEIGHT - 1;
 	}
-	vert_line.x0 = col_x;
-	vert_line.y0 = draw_start;
-	vert_line.x1 = col_x;
-	vert_line.y1 = draw_end;
-	color = pick_side_color(game, ray);
-	draw_line(&game->main.frame, vert_line, color);
+
+	float	wall_x;
+	int		tex_x;
+	int		tex_width;
+	int		tex_height;
+
+	if (ray.side == ORIENT_EAST || ray.side == ORIENT_WEST)
+	{
+		wall_x = ray.pos.y + ray.len * ray.dir.y;
+	}
+	else
+	{
+		wall_x = ray.pos.x + ray.len * ray.dir.x;
+	}
+	wall_x -= floorf(wall_x);
+	tex_width = game->cfg.texture_EA.width;
+	tex_height = game->cfg.texture_EA.height;
+	tex_x = (int)(wall_x * tex_width);
+	float step = 1.0f * tex_height / column_height;
+	float tex_pos = (draw_start - WIN_HEIGHT / 2.0f + column_height / 2.0f) * step;
+	for (int y = draw_start; y < draw_end; y++)
+	{
+		int tex_y = (int)tex_pos;
+		if (tex_y < 0) tex_y = 0;
+		else if (tex_y >= tex_height) tex_y = tex_height - 1;
+		t_image *tex_img;
+		if (ray.side == ORIENT_EAST)
+		{
+			tex_img = &game->cfg.texture_EA;
+		}
+		else if (ray.side == ORIENT_WEST)
+		{
+			tex_img = &game->cfg.texture_WE;
+		}
+		else if (ray.side == ORIENT_NORTH)
+		{
+			tex_img = &game->cfg.texture_NO;
+		}
+		else if (ray.side == ORIENT_SOUTH)
+		{
+			tex_img = &game->cfg.texture_SO;
+		}
+		else
+		{
+			tex_img = NULL;
+		}
+		uint32_t color = get_pixel(tex_img, tex_x, tex_y);
+		put_pixel(&game->main.frame, col_x, y, color);
+		tex_pos += step;
+	}
 	return (0);
 }
 
@@ -254,10 +272,11 @@ int	render_scene(void *param)
 	// Draw background
 	draw_map(&game->debug.frame, game->map);
 	draw_player(&game->debug.frame, game->player);
-	draw_floor_and_ceiling(&game->main.frame, game->cfg);
+	draw_floor_and_ceiling(&game->main.frame, &game->cfg);
 	// Draw foreground
 	do_raycasting(game);
 	// Refresh window frames
+	//draw_image(&game->main, &game->cfg.texture_EA, 0, 0, game->mlx_ctx);
 	refresh_frame(&game->main, game->mlx_ctx);
 	refresh_frame(&game->debug, game->mlx_ctx);
 	return (0);

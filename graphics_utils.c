@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:27:45 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/23 15:54:38 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/08 13:30:00 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	create_window(t_window *win, void *mlx_ctx)
 	{
 		return (1);
 	}
-	win->win_ctx = mlx_new_window(mlx_ctx, win->width, win->height, (char *)win->title);
+	win->win_ctx = mlx_new_window(mlx_ctx, win->width, win->height, win->title);
 	win->frame.width = win->width;
 	win->frame.height = win->height;
 	win->frame.img_ctx = mlx_new_image(mlx_ctx, win->frame.width, win->frame.height);
@@ -65,13 +65,43 @@ uint32_t	rgb_to_hex(uint8_t red, uint8_t green, uint8_t blue)
 	return ((red << 16) | (green << 8) | blue);
 }
 
+int	load_xpm_data(t_image *img, char **xpm_data, void *mlx_ctx)
+{
+	img->img_ctx = mlx_xpm_to_image(mlx_ctx, xpm_data, &img->width, &img->height);
+	if (!img->img_ctx)
+	{
+		return (1);
+	}
+	img->addr = mlx_get_data_addr(img->img_ctx, &img->bits_per_pixel, &img->bytes_per_line, &img->endian);
+	if (!img->addr)
+	{
+		return (1);
+	}
+	return (0);
+}
+
+int	load_xpm_file(t_image *img, char *filename, void *mlx_ctx)
+{
+	img->img_ctx = mlx_xpm_file_to_image(mlx_ctx, filename, &img->width, &img->height);
+	if (!img->img_ctx)
+	{
+		return (1);
+	}
+	img->addr = mlx_get_data_addr(img->img_ctx, &img->bits_per_pixel, &img->bytes_per_line, &img->endian);
+	if (!img->addr)
+	{
+		return (2);
+	}
+	return (0);
+}
+
 // Assuming ARGB32 (little endian) which means BGRA byte order
 // See: https://en.wikipedia.org/wiki/RGBA_color_model#ARGB32
 int	put_pixel(t_image *img, int pos_x, int pos_y, uint32_t color)
 {
-	char	*pixel;
 	int		bytes_per_line;
 	int		bytes_per_pixel;
+	char	*pixel;
 
 	if (!img->img_ctx)
 	{
@@ -84,11 +114,28 @@ int	put_pixel(t_image *img, int pos_x, int pos_y, uint32_t color)
 	bytes_per_line = img->bytes_per_line;
 	bytes_per_pixel = img->bits_per_pixel / 8;
 	pixel = img->addr + pos_y * bytes_per_line + pos_x * bytes_per_pixel;
-	if (bytes_per_pixel == sizeof(color))
-	{
-		*(uint32_t *)pixel = color;
-	}
+	*(uint32_t *)pixel = color;
 	return (0);
+}
+
+uint32_t	get_pixel(t_image *img, int pos_x, int pos_y)
+{
+	int		bytes_per_line;
+	int		bytes_per_pixel;
+	char	*pixel;
+
+	if (!img->img_ctx)
+	{
+		return (1);
+	}
+	if (pos_x < 0 || pos_x >= img->width || pos_y < 0 || pos_y >= img->height)
+	{
+		return (2);
+	}
+	bytes_per_line = img->bytes_per_line;
+	bytes_per_pixel = img->bits_per_pixel / 8;
+	pixel = img->addr + pos_y * bytes_per_line + pos_x * bytes_per_pixel;
+	return (*(uint32_t *)pixel);
 }
 
 int	fill_rect(t_image *img, t_rect rect, uint32_t color)

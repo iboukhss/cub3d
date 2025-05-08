@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:53:21 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/11 16:52:58 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/08 13:31:26 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,20 +47,20 @@ typedef struct s_image
 
 typedef struct s_window
 {
-	void		*win_ctx;
-	t_image		frame;
-	int			width;
-	int			height;
-	const char	*title;
-	int			(*loop_hook)(void *);
-	int			(*key_press_hook)(int, void *);
-	int			(*key_release_hook)(int, void *);
-	int			(*button_press_hook)(int, int, int, void *);
-	int			(*button_release_hook)(int, int, int, void *);
-	int			(*motion_notify_hook)(int, int, int, void *);
-	int			(*expose_hook)(void *);
-	int			(*destroy_notify_hook)(void *);
-	void		*param;
+	void	*win_ctx;
+	t_image	frame;
+	int		width;
+	int		height;
+	char	*title;
+	int		(*loop_hook)(void *);
+	int		(*key_press_hook)(int, void *);
+	int		(*key_release_hook)(int, void *);
+	int		(*button_press_hook)(int, int, int, void *);
+	int		(*button_release_hook)(int, int, int, void *);
+	int		(*motion_notify_hook)(int, int, int, void *);
+	int		(*expose_hook)(void *);
+	int		(*destroy_notify_hook)(void *);
+	void	*param;
 }	t_window;
 
 // Raster types
@@ -90,9 +90,13 @@ typedef struct s_rect
 int			create_window(t_window *win, void *mlx_ctx);
 int			destroy_window(t_window *win, void *mlx_ctx);
 
+int			load_xpm_data(t_image *img, char **xpm_data, void *mlx_ctx);
+int			load_xpm_file(t_image *img, char *filename, void *mlx_ctx);
+
 uint32_t	rgb_to_hex(uint8_t red, uint8_t green, uint8_t blue);
 
 int			put_pixel(t_image *img, int pos_x, int pos_y, uint32_t color);
+uint32_t	get_pixel(t_image *img, int pos_x, int pos_y);
 int			fill_rect(t_image *img, t_rect rect, uint32_t color);
 int			draw_line(t_image *img, t_line line, uint32_t color);
 

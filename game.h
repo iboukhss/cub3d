@@ -21,6 +21,9 @@
 # define MAX_GRID_ROW 255
 # define MAX_GRID_COL 255
 
+// sentinel value for floor_color and ceil_color
+# define COLOR_UNSET 0xFFFFFFFF
+
 #define WHITESPACE " "
 #define IDENTIFIER "NOEAWESOFC"
 
@@ -73,14 +76,6 @@ typedef struct s_player
 	t_camera		cam;
 }	t_player;
 
-// Deprecated
-typedef struct s_rgb
-{
-	int	red;
-	int	green;
-	int	blue;
-}	t_rgb;
-
 // This should hold the texture configuration data. Didn't look at this yet.
 typedef struct s_config
 {
@@ -92,14 +87,12 @@ typedef struct s_config
 	t_image		texture_SO;
 	t_image		texture_WE;
 	t_image		texture_EA;
-	t_rgb		floor;
-	t_rgb		ceiling;
 	uint32_t	north_color;	// temporary colors for NO,WE,SO,EA
 	uint32_t	south_color;
 	uint32_t	east_color;
 	uint32_t	west_color;
-	uint32_t	floor_color;	// can store colors inside a single 32 bit
-	uint32_t	ceil_color;		// integer with using rgb_to_hex()
+	uint32_t 	floor_color;	// can store colors inside a single 32 bit
+	uint32_t     ceil_color;		// integer with using rgb_to_hex()
 	int			done;
 }	t_config;
 

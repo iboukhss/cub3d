@@ -17,7 +17,6 @@ int	check_cub_format(char *scene_path)
 	if (len >= 4 && ft_strncmp(".cub",
 			(const char *)&scene_path[len - 4], 4) == 0)
 	{
-		printf("correct file format !\n");
 		return (0);
 	}
 	else
@@ -109,12 +108,8 @@ void	reset_config(t_config *config)
 	config->SO = NULL;
 	config->WE = NULL;
 	config->EA = NULL;
-	config->ceiling.blue = -1;
-	config->ceiling.green = -1;
-	config->ceiling.red = -1;
-	config->floor.blue = -1;
-	config->floor.green = -1;
-	config->floor.red = -1;
+	config->ceil_color = COLOR_UNSET;
+	config->floor_color = COLOR_UNSET;
 	config->done = 0;
 }
 
@@ -123,10 +118,10 @@ int	get_scene(t_game *game, char *scene_path)
 	if (check_cub_format(scene_path) != 0)
 		return (1);
 	reset_config(&game->cfg);
+	print_error(0, "config reset");
 	if (read_scene(game, scene_path) != 0)
 		return (1);
-	//print_config(game->cfg);
-	//print_map(game->map);
+	print_error(0, "scene ok");
 	if (validate_map(game) != 0)
 		return (1);
 	return (0);

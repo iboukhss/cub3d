@@ -274,6 +274,7 @@ int	main(int argc, char *argv[])
 	}
 	if (get_scene(&game, argv[1]) != 0)
 		return(1);
+	print_error(0, "map ok\n");
 	init_game(&game);
 	create_window(&game.main, game.mlx_ctx);
 	create_window(&game.debug, game.mlx_ctx);	// this is the minimap

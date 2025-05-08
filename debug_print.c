@@ -8,8 +8,8 @@ void print_config(t_config config)
 	printf("SO -> %s\n", config.SO);
 	printf("WE -> %s\n", config.WE);
 	printf("EA -> %s\n", config.EA);
-	printf("F -> RGB(%d,%d,%d)\n", config.floor.red, config.floor.green, config.floor.blue);
-	printf("C -> RGB(%d,%d,%d)\n", config.ceiling.red, config.ceiling.green, config.ceiling.blue);
+	printf("F -> HEX %X\n", config.floor_color);
+	printf("C -> HEX %X \n", config.ceil_color);
 }
 
 void print_map(t_map map)

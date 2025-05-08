@@ -45,28 +45,34 @@ int	validate_identifier(char *type_identifier)
 	return(1);
 }
 
-//QUESTION : is 91   ,    45,0 a valid input ?
-
-void get_rgb(t_rgb *rgb, char *color_code)
+int get_rgb(char *color_code, uint32_t *color)
 {
 	char	**split;
+	uint8_t red;
+	uint8_t green;
+	uint8_t blue;
 	size_t	i;
 	
 	i = 0;
 	if (color_code == NULL)
-		return ;
+		return (1);
 	split = ft_split(color_code, ',');
 	if (!split)
-		return ;
-	rgb->red = ft_atoi(split[0]);
-	rgb->green = ft_atoi(split[1]);
-	rgb->blue = ft_atoi(split[2]);
+	{
+		print_error(1, "Failed to split rgb code");
+		return (1);
+	}
+	red = ft_atoi(split[0]);
+	green = ft_atoi(split[1]);
+	blue = ft_atoi(split[2]);
 	while (split[i] != NULL)
 	{
 		free(split[i]);
 		i++;
 	}
 	free(split);
+	*color = rgb_to_hex(red, green, blue);
+	return (0);
 }
 
 int	update_config(t_config *config, char *type_identifier, char *information)
@@ -80,13 +86,19 @@ int	update_config(t_config *config, char *type_identifier, char *information)
 	else if (ft_strncmp(type_identifier, "EA", 2) == 0)
 		config->EA = information;
 	else if (*type_identifier == 'F')
-		get_rgb(&config->floor, information);
+	{
+		if (get_rgb(information, &config->floor_color) != 0)
+			return (1);
+	}
 	else if (*type_identifier == 'C')
-		get_rgb(&config->floor, information);
+	{
+		if (get_rgb(information, &config->ceil_color) != 0)
+			return (1);
+	}
 	else
 		return (1);
 	if (config->NO != NULL && config->SO != NULL && config->EA != NULL && config->WE != NULL
-		&& config->ceiling.blue != -1 && config->floor.blue != -1)
+		&& config->ceil_color != COLOR_UNSET && config->floor_color != COLOR_UNSET)
 			config->done = 1;
 	return (0);
 }

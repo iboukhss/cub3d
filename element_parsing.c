@@ -124,5 +124,5 @@ int extract_param(t_config *config, char *line)
 		return (free(type_identifier), 1);
 	if (update_config(config, type_identifier, information) != 0)
 		return (free(type_identifier), free(information), 1);
-	return (free(type_identifier), free(information), 0);
+	return (0);
 }

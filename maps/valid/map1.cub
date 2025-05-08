@@ -1,7 +1,7 @@
-NO ./textures/background1.xpm
-SO ./textures/background2.xpm
-WE ./textures/background3.xpm
-EA ./textures/background4.xpm
+NO ./textures/yellowmoss.xpm
+SO ./textures/eagle.xpm
+WE ./textures/bluestone.xpm
+EA ./textures/redbrick.xpm
 F 220,100,0
 C 225,30,0
 

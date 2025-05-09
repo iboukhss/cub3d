@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:34:06 by dennis            #+#    #+#             */
-/*   Updated: 2025/05/09 14:14:25 by dennis           ###   ########.fr       */
+/*   Updated: 2025/05/09 17:33:18 by dennis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
-char	*skip_whitespace(char *line)
-{
-	while (*line != '\n' && ft_strchr(WHITESPACE, *line) != NULL)
-		line++;
-	return (line);
-}
 
 int	validate_identifier(char *type_identifier)
 {
@@ -44,6 +37,27 @@ int	validate_identifier(char *type_identifier)
 	return (1);
 }
 
+int validate_color(char *nbr, uint8_t *color)
+{
+	int i;
+	int	color_nbr;
+	
+	if (!nbr || !color)
+		return (1);
+	i = 0;
+	while (nbr[i] != '\0')
+	{
+		if (ft_isdigit(nbr[i]) != 1)
+			return (2);
+		i++;
+	}
+	color_nbr = ft_atoi(nbr);
+	if (color_nbr < 0 || color_nbr > 255)
+		return (3);
+	*color = (uint8_t)color_nbr;
+	return (0);
+}
+
 int	get_rgb(char *color_code, uint32_t *color)
 {
 	char	**split;
@@ -58,9 +72,12 @@ int	get_rgb(char *color_code, uint32_t *color)
 	split = ft_split(color_code, ',');
 	if (!split)
 		return (print_error(1, "Failed to split rgb code"), 1);
-	red = ft_atoi(split[0]);
-	green = ft_atoi(split[1]);
-	blue = ft_atoi(split[2]);
+	if (validate_color(split[0], &red) != 0)
+		return (print_error(1, "Invalid scene. RGB code invalid."), 1);
+	if (validate_color(split[1], &green) != 0)
+		return (print_error(1, "Invalid scene. RGB code invalid."), 1);
+	if (validate_color(split[2], &blue) != 0)
+		return (print_error(1, "Invalid scene. RGB code invalid."), 1);
 	while (split[i] != NULL)
 	{
 		free(split[i]);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dheck <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 16:24:56 by dheck             #+#    #+#             */
-/*   Updated: 2024/03/15 13:27:35 by dheck            ###   ########.fr       */
+/*   Updated: 2025/05/09 16:20:27 by dennis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static int		ft_feed(char const *s, char c, size_t words, char **array_ptr);
 static void		free_array(char **array_ptr, size_t word_count);
 
 char	**ft_split(char const *s, char c)
-{	
+{
 	size_t	word_count;
 	char	**array_ptr;
 
@@ -36,7 +36,7 @@ char	**ft_split(char const *s, char c)
 	else
 	{
 		return (array_ptr);
-	}	
+	}
 }
 
 static int	ft_feed(char const *s, char c, size_t words, char **array_ptr)

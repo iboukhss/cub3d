@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 14:49:08 by dennis            #+#    #+#             */
-/*   Updated: 2025/05/09 15:51:10 by dennis           ###   ########.fr       */
+/*   Updated: 2025/05/09 18:26:30 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int	update_width(t_game *game, char *line)
 	pos_nl = ft_strchr(line, '\n');
 	if (pos_nl != NULL)
 		line[pos_nl - line] = '\0';
-	len = strnlen(line, MAX_GRID_COL - 1);
+	len = ft_strlen(line);
 	if (len > game->map.width)
 	{
 		game->map.width = len;

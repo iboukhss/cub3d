@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   game.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:19:47 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/29 19:32:38 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/09 15:24:57 by dennis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,10 +125,13 @@ int	keypress_main(int keysym, void *param);
 char	*get_next_line(int fd);
 char	*skip_whitespace(char *line);
 int		extract_param(t_config *config, char *line);
+char	*get_element(char *line, char **element);
+char	*get_rgb_code(char *line, char **element);
 int		get_scene(t_game *game, char *scene_path);
 int		load_all_textures(t_game *game);
 int		load_image(t_game *game, t_image *texture_img, char *path);
 int		read_scene(t_game *game, char *scene_path);
+void	reset_config(t_config *config);
 int		reset_map(t_map *map);
 int		validate_map(t_game *game);
 void	clone_map(t_map *src, t_map *dest);

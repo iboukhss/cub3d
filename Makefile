@@ -14,6 +14,7 @@ SRCS = \
 	debug_print.c \
 	scene_utils.c \
 	element_parsing.c \
+	extract_element.c \
 	map_parsing.c \
 	map_utils.c \
 	game.c \
@@ -83,9 +84,12 @@ vg: $(NAME)
 	valgrind --leak-check=full --track-origins=yes ./$<
 
 map1: all
-	./$(MAKE) maps/map1.cub
+	./$(NAME) maps/valid/map1.cub
+
+map3: all
+	./$(NAME) maps/valid/map3.cub
 
 identifier: all
-	./$(MAKE) maps/map1
+	./$(NAME) maps/map1
 
 .PHONY: all clean fclean re norm

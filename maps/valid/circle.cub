@@ -1,7 +1,7 @@
-NO ./textures/background1.xpm
-SO ./textures/background2.xpm
-WE ./textures/background3.xpm
-EA ./textures/background4.xpm
+NO ./textures/purplestone.xpm
+SO ./textures/purplestone.xpm
+WE ./textures/purplestone.xpm
+EA ./textures/purplestone.xpm
 F 220,100,0
 C 225,30,0
               1111111              

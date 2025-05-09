@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/05 18:40:51 by dheck             #+#    #+#             */
-/*   Updated: 2025/05/09 16:20:59 by dennis           ###   ########.fr       */
+/*   Updated: 2025/05/09 17:29:30 by dennis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 
 char	**ft_split(char const *s, char c);
 int		ft_atoi(const char *nptr);
+int		ft_isdigit(int c);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
 size_t	ft_strlcpy(char *dst, const char *src, size_t size);
 

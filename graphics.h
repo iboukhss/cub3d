@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:53:21 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/08 13:31:26 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/10 17:49:14 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@
 // Convenient MLX data structures
 typedef struct s_image
 {
+	void	*mlx_ctx;
 	void	*img_ctx;
 	char	*addr;
 	int		width;
@@ -47,6 +48,7 @@ typedef struct s_image
 
 typedef struct s_window
 {
+	void	*mlx_ctx;
 	void	*win_ctx;
 	t_image	frame;
 	int		width;
@@ -87,11 +89,13 @@ typedef struct s_rect
 	int	h;
 }	t_rect;
 
-int			create_window(t_window *win, void *mlx_ctx);
-int			destroy_window(t_window *win, void *mlx_ctx);
+int			create_window(t_window *win);
+int			destroy_window(t_window *win);
+
+int			destroy_image(t_image *img);
 
 int			load_xpm_data(t_image *img, char **xpm_data, void *mlx_ctx);
-int			load_xpm_file(t_image *img, char *filename, void *mlx_ctx);
+int			load_xpm_file(t_image *img, char *filename);
 
 uint32_t	rgb_to_hex(uint8_t red, uint8_t green, uint8_t blue);
 

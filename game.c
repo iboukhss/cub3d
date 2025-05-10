@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:29:38 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/08 13:36:30 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/10 17:37:51 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -295,8 +295,8 @@ int	main(int argc, char *argv[])
 		return(1);
 	print_error(0, "map ok\n");
 	init_game(&game);
-	create_window(&game.main, game.mlx_ctx);
-	create_window(&game.debug, game.mlx_ctx);	// this is the minimap
+	create_window(&game.main);
+	create_window(&game.debug);	// this is the minimap
 	mlx_loop(game.mlx_ctx);
 	destroy_game(&game);
 	return (0);

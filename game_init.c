@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 23:17:42 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/08 13:54:39 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/10 17:56:59 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,10 +101,14 @@ static const char *const g_sample_xpm[] = {
 
 static int	init_config(t_config *cfg, void *mlx_ctx)
 {
-	load_xpm_file(&cfg->texture_EA, cfg->EA, mlx_ctx);
-	load_xpm_file(&cfg->texture_WE, cfg->WE, mlx_ctx);
-	load_xpm_file(&cfg->texture_NO, cfg->NO, mlx_ctx);
-	load_xpm_file(&cfg->texture_SO, cfg->SO, mlx_ctx);
+	cfg->texture_EA.mlx_ctx = mlx_ctx;
+	cfg->texture_WE.mlx_ctx = mlx_ctx;
+	cfg->texture_NO.mlx_ctx = mlx_ctx;
+	cfg->texture_SO.mlx_ctx = mlx_ctx;
+	load_xpm_file(&cfg->texture_EA, cfg->EA);
+	load_xpm_file(&cfg->texture_WE, cfg->WE);
+	load_xpm_file(&cfg->texture_NO, cfg->NO);
+	load_xpm_file(&cfg->texture_SO, cfg->SO);
 	return (0);
 }
 
@@ -122,7 +126,9 @@ static int	init_camera(t_camera *cam, t_player player)
 
 static int	init_main_window(t_window *win, t_game *game)
 {
+	win->mlx_ctx = game->mlx_ctx;
 	win->win_ctx = NULL;
+	win->frame.mlx_ctx = game->mlx_ctx;
 	win->frame.img_ctx = NULL;
 	win->width = WIN_WIDTH;
 	win->height = WIN_HEIGHT;
@@ -141,7 +147,9 @@ static int	init_main_window(t_window *win, t_game *game)
 
 static int	init_debug_window(t_window *win, t_game *game)
 {
+	win->mlx_ctx = game->mlx_ctx;
 	win->win_ctx = NULL;
+	win->frame.mlx_ctx = game->mlx_ctx;
 	win->frame.img_ctx = NULL;
 	win->width = game->map.width * TILE_SIZE;
 	win->height = game->map.height * TILE_SIZE;
@@ -172,8 +180,16 @@ int	init_game(t_game *game)
 
 int	destroy_game(t_game *game)
 {
-	destroy_window(&game->main, game->mlx_ctx);
-	destroy_window(&game->debug, game->mlx_ctx);
+	destroy_window(&game->main);
+	destroy_window(&game->debug);
+	destroy_image(&game->cfg.texture_EA);
+	destroy_image(&game->cfg.texture_WE);
+	destroy_image(&game->cfg.texture_NO);
+	destroy_image(&game->cfg.texture_SO);
+	free(game->cfg.EA);
+	free(game->cfg.WE);
+	free(game->cfg.NO);
+	free(game->cfg.SO);
 	mlx_destroy_display(game->mlx_ctx);
 	free(game->mlx_ctx);
 	return (0);

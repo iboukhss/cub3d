@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:34:06 by dennis            #+#    #+#             */
-/*   Updated: 2025/05/10 10:16:10 by dennis           ###   ########.fr       */
+/*   Updated: 2025/05/10 10:50:56 by dennis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,12 +78,14 @@ int	get_rgb(char *color_code, uint32_t *color)
 	split = ft_split(color_code, ',');
 	if (!split)
 		return (print_error(1, "Failed to split rgb code"), 1);
-	if (validate_color(split[0], &red) != 0)
-		return (print_error(1, "Invalid scene. RGB code invalid."), 1);
-	if (validate_color(split[1], &green) != 0)
-		return (print_error(1, "Invalid scene. RGB code invalid."), 1);
-	if (validate_color(split[2], &blue) != 0)
-		return (print_error(1, "Invalid scene. RGB code invalid."), 1);
+	if (validate_color(split[0], &red) != 0 ||
+		validate_color(split[1], &green) != 0 ||
+		validate_color(split[2], &blue) != 0)
+	{
+		free(color_code);
+		print_error(1, "Invalid scene. RGB code invalid.");
+		return (1);
+	}	
 	while (split[i] != NULL)
 	{
 		free(split[i]);
@@ -91,6 +93,7 @@ int	get_rgb(char *color_code, uint32_t *color)
 	}
 	free(split);
 	*color = rgb_to_hex(red, green, blue);
+	free(color_code);
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:34:06 by dennis            #+#    #+#             */
-/*   Updated: 2025/05/10 10:50:56 by dennis           ###   ########.fr       */
+/*   Updated: 2025/05/10 10:58:16 by dennis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,5 +150,5 @@ int	extract_param(t_config *config, char *line)
 		return (free(type_identifier), 1);
 	if (update_config(config, type_identifier, information) != 0)
 		return (free(type_identifier), free(information), 1);
-	return (0);
+	return (free(type_identifier), 0);
 }

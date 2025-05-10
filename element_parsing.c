@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:34:06 by dennis            #+#    #+#             */
-/*   Updated: 2025/05/09 17:33:18 by dennis           ###   ########.fr       */
+/*   Updated: 2025/05/10 09:49:21 by dennis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ int validate_color(char *nbr, uint8_t *color)
 	i = 0;
 	while (nbr[i] != '\0')
 	{
-		if (ft_isdigit(nbr[i]) != 1)
+		if (nbr[i] != ' ' && ft_isdigit(nbr[i]) != 1)
 			return (2);
 		i++;
 	}

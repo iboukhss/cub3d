@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:34:06 by dennis            #+#    #+#             */
-/*   Updated: 2025/05/10 09:49:21 by dennis           ###   ########.fr       */
+/*   Updated: 2025/05/10 10:16:10 by dennis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,18 @@ int	validate_identifier(char *type_identifier)
 
 	i = 0;
 	len = ft_strlen(type_identifier);
+	if (ft_strchr(TABS, *type_identifier) != NULL)
+	{
+		print_error(1, "Invalid scene. Only spaces allowed before type identifier.");
+		return (1);
+	}
 	while (identifiers[i] != NULL)
 	{
 		if (ft_strncmp(type_identifier, identifiers[i], len) == 0)
 			return (0);
 		i++;
 	}
+	print_error(1, "Invalid Scene. Invalid type identifier.");
 	return (1);
 }
 

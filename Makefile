@@ -10,7 +10,6 @@ LIBGNL = $(GNL_DIR)/libgnl.a
 LIBFT = $(LIBFT_DIR)/libft.a
 
 SRCS = \
-	load_textures.c \
 	debug_print.c \
 	scene_utils.c \
 	element_parsing.c \

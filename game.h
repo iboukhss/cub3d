@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:19:47 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/09 15:24:57 by dennis           ###   ########.fr       */
+/*   Updated: 2025/05/10 10:15:33 by dennis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 # define COLOR_UNSET 0xFFFFFFFF
 
 #define WHITESPACE " "
-#define IDENTIFIER "NOEAWESOFC"
+#define TABS "\t\v\f\r"
 
 # include "graphics.h"
 # include "vec2.h"

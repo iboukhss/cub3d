@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:34:06 by dennis            #+#    #+#             */
-/*   Updated: 2025/05/10 10:58:16 by dennis           ###   ########.fr       */
+/*   Updated: 2025/05/10 11:11:47 by dennis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	validate_identifier(char *type_identifier)
 	len = ft_strlen(type_identifier);
 	if (ft_strchr(TABS, *type_identifier) != NULL)
 	{
-		print_error(1, "Invalid scene. Only spaces allowed before type identifier.");
+		print_error(1, "Invalid scene. Only spaces allowed.");
 		return (1);
 	}
 	while (identifiers[i] != NULL)
@@ -43,11 +43,11 @@ int	validate_identifier(char *type_identifier)
 	return (1);
 }
 
-int validate_color(char *nbr, uint8_t *color)
+int	check_rgb(char *nbr, uint8_t *color)
 {
-	int i;
+	int	i;
 	int	color_nbr;
-	
+
 	if (!nbr || !color)
 		return (1);
 	i = 0;
@@ -78,23 +78,19 @@ int	get_rgb(char *color_code, uint32_t *color)
 	split = ft_split(color_code, ',');
 	if (!split)
 		return (print_error(1, "Failed to split rgb code"), 1);
-	if (validate_color(split[0], &red) != 0 ||
-		validate_color(split[1], &green) != 0 ||
-		validate_color(split[2], &blue) != 0)
+	if (check_rgb(split[0], &red) != 0 || check_rgb(split[1], &green) != 0
+		|| check_rgb(split[2], &blue) != 0)
 	{
-		free(color_code);
 		print_error(1, "Invalid scene. RGB code invalid.");
-		return (1);
-	}	
+		return (free(color_code), 1);
+	}
 	while (split[i] != NULL)
 	{
 		free(split[i]);
 		i++;
 	}
-	free(split);
 	*color = rgb_to_hex(red, green, blue);
-	free(color_code);
-	return (0);
+	return (free(color_code), free(split), 0);
 }
 
 int	update_config(t_config *config, char *type_identifier, char *information)

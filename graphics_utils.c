@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:27:45 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/08 13:30:00 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/10 17:48:42 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,22 @@
 
 #include <math.h>
 
-int	create_window(t_window *win, void *mlx_ctx)
+int	create_window(t_window *win)
 {
 	if (win->win_ctx)
 	{
 		return (1);
 	}
-	win->win_ctx = mlx_new_window(mlx_ctx, win->width, win->height, win->title);
+	win->win_ctx = mlx_new_window(win->mlx_ctx, win->width, win->height, win->title);
 	win->frame.width = win->width;
 	win->frame.height = win->height;
-	win->frame.img_ctx = mlx_new_image(mlx_ctx, win->frame.width, win->frame.height);
+	win->frame.img_ctx = mlx_new_image(win->mlx_ctx, win->frame.width, win->frame.height);
 	win->frame.addr = mlx_get_data_addr(win->frame.img_ctx,
 										&win->frame.bits_per_pixel,
 										&win->frame.bytes_per_line,
 										&win->frame.endian);
 	if (win->loop_hook)
-		mlx_loop_hook(mlx_ctx, win->loop_hook, win->param);
+		mlx_loop_hook(win->mlx_ctx, win->loop_hook, win->param);
 	if (win->key_press_hook)
 		mlx_hook(win->win_ctx, KeyPress, KeyPressMask, win->key_press_hook, win->param);
 	if (win->key_release_hook)
@@ -47,16 +47,26 @@ int	create_window(t_window *win, void *mlx_ctx)
 	return (0);
 }
 
-int	destroy_window(t_window *win, void *mlx_ctx)
+int	destroy_image(t_image *img)
+{
+	if (!img->img_ctx)
+	{
+		return (1);
+	}
+	mlx_destroy_image(img->mlx_ctx, img->img_ctx);
+	img->img_ctx = NULL;
+	return (0);
+}
+
+int	destroy_window(t_window *win)
 {
 	if (!win->win_ctx)
 	{
 		return (1);
 	}
-	mlx_destroy_image(mlx_ctx, win->frame.img_ctx);
-	win->frame.img_ctx = NULL;
-	mlx_destroy_window(mlx_ctx, win->win_ctx);
+	mlx_destroy_window(win->mlx_ctx, win->win_ctx);
 	win->win_ctx = NULL;
+	destroy_image(&win->frame);
 	return (0);
 }
 
@@ -68,30 +78,18 @@ uint32_t	rgb_to_hex(uint8_t red, uint8_t green, uint8_t blue)
 int	load_xpm_data(t_image *img, char **xpm_data, void *mlx_ctx)
 {
 	img->img_ctx = mlx_xpm_to_image(mlx_ctx, xpm_data, &img->width, &img->height);
-	if (!img->img_ctx)
-	{
-		return (1);
-	}
 	img->addr = mlx_get_data_addr(img->img_ctx, &img->bits_per_pixel, &img->bytes_per_line, &img->endian);
-	if (!img->addr)
-	{
-		return (1);
-	}
 	return (0);
 }
 
-int	load_xpm_file(t_image *img, char *filename, void *mlx_ctx)
+int	load_xpm_file(t_image *img, char *filename)
 {
-	img->img_ctx = mlx_xpm_file_to_image(mlx_ctx, filename, &img->width, &img->height);
+	img->img_ctx = mlx_xpm_file_to_image(img->mlx_ctx, filename, &img->width, &img->height);
 	if (!img->img_ctx)
 	{
 		return (1);
 	}
 	img->addr = mlx_get_data_addr(img->img_ctx, &img->bits_per_pixel, &img->bytes_per_line, &img->endian);
-	if (!img->addr)
-	{
-		return (2);
-	}
 	return (0);
 }
 

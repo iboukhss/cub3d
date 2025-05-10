@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 15:25:05 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/04/29 00:54:20 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/10 17:38:27 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	close_debug_window(void *param)
 	t_game	*game;
 
 	game = (t_game *)param;
-	destroy_window(&game->debug, game->mlx_ctx);
+	destroy_window(&game->debug);
 	return (0);
 }
 
@@ -44,7 +44,7 @@ int	keyrelease_main(int keysym, void *param)
 	}
 	if (keysym == XK_m || keysym == XK_F1)
 	{
-		create_window(&game->debug, game->mlx_ctx);
+		create_window(&game->debug);
 	}
 	return (0);
 }

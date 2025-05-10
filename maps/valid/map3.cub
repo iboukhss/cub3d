@@ -1,17 +1,19 @@
-    NO ./textures/yellowmoss.xpm           
-     
+    F   0      ,0     ,   0      
+
+               NO ./textures/yellowmoss.xpm           
+    
      
 SO                                      ./textures/eagle.xpm
-
+                       C              255   , 255,255      
 WE ./textures/bluestone.xpm
 EA         ./textures/redbrick.xpm     
 
 
-F 220,100    , 0   
 
 
 
-C              225   , 250,230      
+
+
 
 
 

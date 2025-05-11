@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 23:17:42 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/10 17:56:59 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/11 06:12:48 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,14 +101,14 @@ static const char *const g_sample_xpm[] = {
 
 static int	init_config(t_config *cfg, void *mlx_ctx)
 {
-	cfg->texture_EA.mlx_ctx = mlx_ctx;
-	cfg->texture_WE.mlx_ctx = mlx_ctx;
-	cfg->texture_NO.mlx_ctx = mlx_ctx;
-	cfg->texture_SO.mlx_ctx = mlx_ctx;
-	load_xpm_file(&cfg->texture_EA, cfg->EA);
-	load_xpm_file(&cfg->texture_WE, cfg->WE);
-	load_xpm_file(&cfg->texture_NO, cfg->NO);
-	load_xpm_file(&cfg->texture_SO, cfg->SO);
+	cfg->east_texture.mlx_ctx = mlx_ctx;
+	cfg->west_texture.mlx_ctx = mlx_ctx;
+	cfg->north_texture.mlx_ctx = mlx_ctx;
+	cfg->south_texture.mlx_ctx = mlx_ctx;
+	load_xpm_file(&cfg->east_texture, cfg->east_filepath);
+	load_xpm_file(&cfg->west_texture, cfg->west_filepath);
+	load_xpm_file(&cfg->north_texture, cfg->north_filepath);
+	load_xpm_file(&cfg->south_texture, cfg->south_filepath);
 	return (0);
 }
 
@@ -156,12 +156,12 @@ static int	init_debug_window(t_window *win, t_game *game)
 	win->title = "Map";
 	win->loop_hook = NULL;
 	win->key_press_hook = NULL;
-	win->key_release_hook = keyrelease_debug;
+	win->key_release_hook = NULL;
 	win->button_press_hook = NULL;
 	win->button_release_hook = NULL;
 	win->motion_notify_hook = NULL;
 	win->expose_hook = NULL;
-	win->destroy_notify_hook = close_debug_window;
+	win->destroy_notify_hook = NULL;
 	win->param = game;
 	return (0);
 }
@@ -182,14 +182,14 @@ int	destroy_game(t_game *game)
 {
 	destroy_window(&game->main);
 	destroy_window(&game->debug);
-	destroy_image(&game->cfg.texture_EA);
-	destroy_image(&game->cfg.texture_WE);
-	destroy_image(&game->cfg.texture_NO);
-	destroy_image(&game->cfg.texture_SO);
-	free(game->cfg.EA);
-	free(game->cfg.WE);
-	free(game->cfg.NO);
-	free(game->cfg.SO);
+	destroy_image(&game->cfg.east_texture);
+	destroy_image(&game->cfg.west_texture);
+	destroy_image(&game->cfg.north_texture);
+	destroy_image(&game->cfg.south_texture);
+	free(game->cfg.east_filepath);
+	free(game->cfg.west_filepath);
+	free(game->cfg.north_filepath);
+	free(game->cfg.south_filepath);
 	mlx_destroy_display(game->mlx_ctx);
 	free(game->mlx_ctx);
 	return (0);

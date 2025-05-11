@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:29:38 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/10 17:37:51 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/11 06:12:32 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,8 +196,8 @@ static int	draw_wall_column(t_game *game, int col_x, t_ray ray)
 		wall_x = ray.pos.x + ray.len * ray.dir.x;
 	}
 	wall_x -= floorf(wall_x);
-	tex_width = game->cfg.texture_EA.width;
-	tex_height = game->cfg.texture_EA.height;
+	tex_width = game->cfg.east_texture.width;
+	tex_height = game->cfg.east_texture.height;
 	tex_x = (int)(wall_x * tex_width);
 	float step = 1.0f * tex_height / column_height;
 	float tex_pos = (draw_start - WIN_HEIGHT / 2.0f + column_height / 2.0f) * step;
@@ -209,19 +209,19 @@ static int	draw_wall_column(t_game *game, int col_x, t_ray ray)
 		t_image *tex_img;
 		if (ray.side == ORIENT_EAST)
 		{
-			tex_img = &game->cfg.texture_EA;
+			tex_img = &game->cfg.east_texture;
 		}
 		else if (ray.side == ORIENT_WEST)
 		{
-			tex_img = &game->cfg.texture_WE;
+			tex_img = &game->cfg.west_texture;
 		}
 		else if (ray.side == ORIENT_NORTH)
 		{
-			tex_img = &game->cfg.texture_NO;
+			tex_img = &game->cfg.north_texture;
 		}
 		else if (ray.side == ORIENT_SOUTH)
 		{
-			tex_img = &game->cfg.texture_SO;
+			tex_img = &game->cfg.south_texture;
 		}
 		else
 		{

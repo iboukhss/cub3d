@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 15:54:27 by dennis            #+#    #+#             */
-/*   Updated: 2025/05/09 15:54:41 by dennis           ###   ########.fr       */
+/*   Updated: 2025/05/11 06:11:38 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@ void	set_player_pos(t_game *game, char orientation, int y, int x)
 
 void	reset_config(t_config *config)
 {
-	config->NO = NULL;
-	config->SO = NULL;
-	config->WE = NULL;
-	config->EA = NULL;
+	config->north_filepath = NULL;
+	config->south_filepath = NULL;
+	config->west_filepath = NULL;
+	config->east_filepath = NULL;
 	config->ceil_color = COLOR_UNSET;
 	config->floor_color = COLOR_UNSET;
 	config->done = 0;

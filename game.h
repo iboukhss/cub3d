@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:19:47 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/10 10:15:33 by dennis           ###   ########.fr       */
+/*   Updated: 2025/05/11 06:12:32 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,20 +79,16 @@ typedef struct s_player
 // This should hold the texture configuration data. Didn't look at this yet.
 typedef struct s_config
 {
-	char		*NO;
-	char		*SO;
-	char		*WE;
-	char		*EA;
-	t_image		texture_NO;      // store in void *img_ctx
-	t_image		texture_SO;
-	t_image		texture_WE;
-	t_image		texture_EA;
-	uint32_t	north_color;	// temporary colors for NO,WE,SO,EA
-	uint32_t	south_color;
-	uint32_t	east_color;
-	uint32_t	west_color;
+	char		*north_filepath;
+	char		*south_filepath;
+	char		*west_filepath;
+	char		*east_filepath;
+	t_image		north_texture;      // store in void *img_ctx
+	t_image		south_texture;
+	t_image		west_texture;
+	t_image		east_texture;
 	uint32_t 	floor_color;	// can store colors inside a single 32 bit
-	uint32_t     ceil_color;		// integer with using rgb_to_hex()
+	uint32_t	ceil_color;		// integer with using rgb_to_hex()
 	int			done;
 }	t_config;
 

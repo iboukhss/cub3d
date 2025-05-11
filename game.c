@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:29:38 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/11 06:12:32 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/11 21:48:38 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ static int	draw_player(t_image *frame, t_player player)
 	return (0);
 }
 
-static int	draw_floor_and_ceiling(t_image *frame, const t_config *conf)
+static int	draw_floor_and_ceiling(t_image *frame, t_config conf)
 {
 	t_rect	floor;
 	t_rect	ceil;
@@ -76,74 +76,79 @@ static int	draw_floor_and_ceiling(t_image *frame, const t_config *conf)
 	floor.y = ceil.h;
 	floor.w = frame->width;
 	floor.h = frame->height - ceil.h;
-	fill_rect(frame, ceil, conf->ceil_color);
-	fill_rect(frame, floor, conf->floor_color);
+	fill_rect(frame, ceil, conf.ceil_color);
+	fill_rect(frame, floor, conf.floor_color);
 	return (0);
 }
 
 // See: https://lodev.org/cgtutor/raycasting.html#Untextured_Raycaster_
-static void	cast_ray(t_ray *ray, t_map map)
+static int	init_dda(struct s_dda_ctx *d, t_ray ray)
 {
-	int		map_x = (int)ray->pos.x;
-	int		map_y = (int)ray->pos.y;
-
-	float	delta_dist_x = (ray->dir.x == 0) ? INFINITY : fabsf(1.0f / ray->dir.x);
-	float	delta_dist_y = (ray->dir.y == 0) ? INFINITY : fabsf(1.0f / ray->dir.y);
-
-	float	side_dist_x;
-	float	side_dist_y;
-
-	int		step_x;
-	int		step_y;
-
-	if (ray->dir.x < 0)
+	d->map_x = (int)ray.pos.x;
+	d->map_y = (int)ray.pos.y;
+	d->delta_dist_x = (ray.dir.x == 0) ? INFINITY : fabsf(1.0f / ray.dir.x);
+	d->delta_dist_y = (ray.dir.y == 0) ? INFINITY : fabsf(1.0f / ray.dir.y);
+	if (ray.dir.x < 0)
 	{
-		step_x = -1;
-		side_dist_x = (ray->pos.x - map_x) * delta_dist_x;
+		d->step_x = -1;
+		d->side_dist_x = (ray.pos.x - d->map_x) * d->delta_dist_x;
 	}
 	else
 	{
-		step_x = 1;
-		side_dist_x = (map_x + 1.0f - ray->pos.x) * delta_dist_x;
+		d->step_x = 1;
+		d->side_dist_x = (d->map_x + 1.0f - ray.pos.x) * d->delta_dist_x;
 	}
-	if (ray->dir.y < 0)
+	if (ray.dir.y < 0)
 	{
-		step_y = -1;
-		side_dist_y = (ray->pos.y - map_y) * delta_dist_y;
+		d->step_y = -1;
+		d->side_dist_y = (ray.pos.y - d->map_y) * d->delta_dist_y;
 	}
 	else
 	{
-		step_y = 1;
-		side_dist_y = (map_y + 1.0f - ray->pos.y) * delta_dist_y;
+		d->step_y = 1;
+		d->side_dist_y = (d->map_y + 1.0f - ray.pos.y) * d->delta_dist_y;
 	}
+	return (0);
+}
 
+static int	run_dda(t_ray *ray, struct s_dda_ctx d, t_map map)
+{
 	while (1)
 	{
-		if (side_dist_x < side_dist_y)
+		if (d.side_dist_x < d.side_dist_y)
 		{
-			side_dist_x += delta_dist_x;
-			map_x += step_x;
-			ray->side = (step_x > 0) ? ORIENT_EAST : ORIENT_WEST;
+			d.side_dist_x += d.delta_dist_x;
+			d.map_x += d.step_x;
+			ray->side = (d.step_x > 0) ? ORIENT_EAST : ORIENT_WEST;
 		}
 		else
 		{
-			side_dist_y += delta_dist_y;
-			map_y += step_y;
-			ray->side = (step_y > 0) ? ORIENT_SOUTH : ORIENT_NORTH;
+			d.side_dist_y += d.delta_dist_y;
+			d.map_y += d.step_y;
+			ray->side = (d.step_y > 0) ? ORIENT_SOUTH : ORIENT_NORTH;
 		}
-		if (map_x < 0 || map_x >= map.width || map_y < 0 || map_y >= map.height || map.grid[map_y][map_x] == '1')
+		if (d.map_x < 0 || d.map_x >= map.width || d.map_y < 0 || d.map_y >= map.height || map.grid[d.map_y][d.map_x] == '1')
 		{
 			break ;
 		}
 	}
 	if (ray->side == ORIENT_EAST || ray->side == ORIENT_WEST)
 	{
-		ray->len = side_dist_x - delta_dist_x;
+		ray->len = d.side_dist_x - d.delta_dist_x;
 	}
 	else if (ray->side == ORIENT_NORTH || ray->side == ORIENT_SOUTH)
 	{
-		ray->len = side_dist_y - delta_dist_y;
+		ray->len = d.side_dist_y - d.delta_dist_y;
 	}
+	return (0);
+}
+
+static void	cast_ray(t_ray *ray, t_map map)
+{
+	struct s_dda_ctx	dda_ctx;
+
+	init_dda(&dda_ctx, *ray);
+	run_dda(ray, dda_ctx, map);
 }
 
 static int	draw_ray_on_minimap(t_game *game, t_ray ray)
@@ -164,73 +169,79 @@ static int	draw_ray_on_minimap(t_game *game, t_ray ray)
 	return (0);
 }
 
-static int	draw_wall_column(t_game *game, int col_x, t_ray ray)
+static int	init_slice(struct s_col_ctx *c, t_ray ray)
 {
-	int			column_height;
-	int			draw_start;
-	int			draw_end;
-
-	column_height = (int)(WIN_HEIGHT / ray.len);
-	draw_start = -column_height / 2 + WIN_HEIGHT / 2;
-	draw_end = column_height / 2 + WIN_HEIGHT / 2;
-	if (draw_start < 0)
+	c->column_height = (int)(WIN_HEIGHT / ray.len);
+	c->draw_start = -c->column_height / 2 + WIN_HEIGHT / 2;
+	c->draw_end = c->column_height / 2 + WIN_HEIGHT / 2;
+	if (c->draw_start < 0)
 	{
-		draw_start = 0;
+		c->draw_start = 0;
 	}
-	if (draw_end >= WIN_HEIGHT)
+	if (c->draw_end >= WIN_HEIGHT)
 	{
-		draw_end = WIN_HEIGHT - 1;
+		c->draw_end = WIN_HEIGHT - 1;
 	}
-
-	float	wall_x;
-	int		tex_x;
-	int		tex_width;
-	int		tex_height;
-
 	if (ray.side == ORIENT_EAST || ray.side == ORIENT_WEST)
 	{
-		wall_x = ray.pos.y + ray.len * ray.dir.y;
+		c->wall_x = ray.pos.y + ray.len * ray.dir.y;
 	}
 	else
 	{
-		wall_x = ray.pos.x + ray.len * ray.dir.x;
+		c->wall_x = ray.pos.x + ray.len * ray.dir.x;
 	}
-	wall_x -= floorf(wall_x);
-	tex_width = game->cfg.east_texture.width;
-	tex_height = game->cfg.east_texture.height;
-	tex_x = (int)(wall_x * tex_width);
-	float step = 1.0f * tex_height / column_height;
-	float tex_pos = (draw_start - WIN_HEIGHT / 2.0f + column_height / 2.0f) * step;
-	for (int y = draw_start; y < draw_end; y++)
+	c->wall_x -= floorf(c->wall_x);
+	c->tex_x = (int)(c->wall_x * c->tex->width);
+	c->step = 1.0f * c->tex->height / c->column_height;
+	c->tex_pos = (c->draw_start - WIN_HEIGHT / 2.0f + c->column_height / 2.0f) * c->step;
+	return (0);
+}
+
+static int	draw_slice(t_image *img, int col_x, struct s_col_ctx c)
+{
+	int			tex_y;
+	uint32_t	color;
+
+	for (int y = c.draw_start; y < c.draw_end; y++)
 	{
-		int tex_y = (int)tex_pos;
-		if (tex_y < 0) tex_y = 0;
-		else if (tex_y >= tex_height) tex_y = tex_height - 1;
-		t_image *tex_img;
-		if (ray.side == ORIENT_EAST)
+		tex_y = (int)c.tex_pos;
+		if (tex_y < 0)
 		{
-			tex_img = &game->cfg.east_texture;
+			tex_y = 0;
 		}
-		else if (ray.side == ORIENT_WEST)
+		else if (tex_y >= c.tex->height)
 		{
-			tex_img = &game->cfg.west_texture;
+			tex_y = c.tex->height - 1;
 		}
-		else if (ray.side == ORIENT_NORTH)
-		{
-			tex_img = &game->cfg.north_texture;
-		}
-		else if (ray.side == ORIENT_SOUTH)
-		{
-			tex_img = &game->cfg.south_texture;
-		}
-		else
-		{
-			tex_img = NULL;
-		}
-		uint32_t color = get_pixel(tex_img, tex_x, tex_y);
-		put_pixel(&game->main.frame, col_x, y, color);
-		tex_pos += step;
+		color = get_pixel(c.tex, c.tex_x, tex_y);
+		put_pixel(img, col_x, y, color);
+		c.tex_pos += c.step;
 	}
+	return (0);
+}
+
+static int	draw_wall_column(t_game *game, int col_x, t_ray ray)
+{
+	struct s_col_ctx	col_ctx;
+
+	if (ray.side == ORIENT_EAST)
+	{
+		col_ctx.tex = &game->cfg.east_texture;
+	}
+	else if (ray.side == ORIENT_WEST)
+	{
+		col_ctx.tex = &game->cfg.west_texture;
+	}
+	else if (ray.side == ORIENT_NORTH)
+	{
+		col_ctx.tex = &game->cfg.north_texture;
+	}
+	else
+	{
+		col_ctx.tex = &game->cfg.south_texture;
+	}
+	init_slice(&col_ctx, ray);
+	draw_slice(&game->main.frame, col_x, col_ctx);
 	return (0);
 }
 
@@ -269,14 +280,10 @@ int	render_scene(void *param)
 	t_game	*game;
 
 	game = (t_game *)param;
-	// Draw background
 	draw_map(&game->debug.frame, game->map);
 	draw_player(&game->debug.frame, game->player);
-	draw_floor_and_ceiling(&game->main.frame, &game->cfg);
-	// Draw foreground
+	draw_floor_and_ceiling(&game->main.frame, game->cfg);
 	do_raycasting(game);
-	// Refresh window frames
-	//draw_image(&game->main, &game->cfg.texture_EA, 0, 0, game->mlx_ctx);
 	refresh_frame(&game->main, game->mlx_ctx);
 	refresh_frame(&game->debug, game->mlx_ctx);
 	return (0);
@@ -292,11 +299,11 @@ int	main(int argc, char *argv[])
 		return (1);
 	}
 	if (get_scene(&game, argv[1]) != 0)
-		return(1);
+		return (1);
 	print_error(0, "map ok\n");
 	init_game(&game);
 	create_window(&game.main);
-	create_window(&game.debug);	// this is the minimap
+	create_window(&game.debug);
 	mlx_loop(game.mlx_ctx);
 	destroy_game(&game);
 	return (0);

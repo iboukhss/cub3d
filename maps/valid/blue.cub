@@ -1,7 +1,7 @@
-NO ./textures/greystone.xpm
-SO ./textures/greystone.xpm
-WE ./textures/greystone_dark.xpm
-EA ./textures/greystone_dark.xpm
+NO ./textures/bluestone.xpm
+SO ./textures/bluestone.xpm
+WE ./textures/bluestone_dark.xpm
+EA ./textures/bluestone_dark.xpm
 F 211,211,211
 C 69,69,69
 

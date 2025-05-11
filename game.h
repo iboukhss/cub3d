@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:19:47 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/11 06:54:06 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/11 21:00:53 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,30 @@
 # include "vec2.h"
 
 # include <stddef.h>
+
+struct s_dda_ctx
+{
+	int		map_x;
+	int		map_y;
+	float	delta_dist_x;
+	float	delta_dist_y;
+	float	side_dist_x;
+	float	side_dist_y;
+	int		step_x;
+	int		step_y;
+};
+
+struct s_col_ctx
+{
+	int		column_height;
+	int		draw_start;
+	int		draw_end;
+	float	wall_x;
+	t_image	*tex;
+	int		tex_x;
+	float	step;
+	float	tex_pos;
+};
 
 typedef enum e_orientation
 {

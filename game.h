@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:19:47 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/11 06:12:32 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/11 06:54:06 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@
 // sentinel value for floor_color and ceil_color
 # define COLOR_UNSET 0xFFFFFFFF
 
-#define WHITESPACE " "
-#define TABS "\t\v\f\r"
+# define WHITESPACE " "
+# define TABS "\t\v\f\r"
 
 # include "graphics.h"
 # include "vec2.h"
@@ -83,11 +83,11 @@ typedef struct s_config
 	char		*south_filepath;
 	char		*west_filepath;
 	char		*east_filepath;
-	t_image		north_texture;      // store in void *img_ctx
+	t_image		north_texture;	// store in void *img_ctx
 	t_image		south_texture;
 	t_image		west_texture;
 	t_image		east_texture;
-	uint32_t 	floor_color;	// can store colors inside a single 32 bit
+	uint32_t	floor_color;	// can store colors inside a single 32 bit
 	uint32_t	ceil_color;		// integer with using rgb_to_hex()
 	int			done;
 }	t_config;
@@ -104,18 +104,18 @@ typedef struct s_game
 	t_config	cfg;
 }	t_game;
 
-int	init_game(t_game *game);
-int	destroy_game(t_game *game);
+int		init_game(t_game *game);
+int		destroy_game(t_game *game);
 
 // Hooks
-int	close_main_window(void *param);
-int	close_debug_window(void *param);
+int		close_main_window(void *param);
+int		close_debug_window(void *param);
 
-int	render_scene(void *param);
+int		render_scene(void *param);
 
-int	keyrelease_main(int keysym, void *param);
-int	keyrelease_debug(int keysym, void *param);
-int	keypress_main(int keysym, void *param);
+int		keyrelease_main(int keysym, void *param);
+int		keyrelease_debug(int keysym, void *param);
+int		keypress_main(int keysym, void *param);
 
 // Newly added
 char	*get_next_line(int fd);

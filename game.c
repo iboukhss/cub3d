@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:29:38 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/12 14:45:05 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:43:30 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,25 +227,18 @@ static int	init_slice(struct s_col_ctx *c, t_ray ray)
 	c->draw_start = -c->column_height / 2 + WIN_HEIGHT / 2;
 	c->draw_end = c->column_height / 2 + WIN_HEIGHT / 2;
 	if (c->draw_start < 0)
-	{
 		c->draw_start = 0;
-	}
 	if (c->draw_end >= WIN_HEIGHT)
-	{
 		c->draw_end = WIN_HEIGHT - 1;
-	}
 	if (ray.side == ORIENT_EAST || ray.side == ORIENT_WEST)
-	{
 		c->wall_x = ray.pos.y + ray.len * ray.dir.y;
-	}
 	else
-	{
 		c->wall_x = ray.pos.x + ray.len * ray.dir.x;
-	}
 	c->wall_x -= floorf(c->wall_x);
 	c->tex_x = (int)(c->wall_x * c->tex->width);
 	c->step = 1.0f * c->tex->height / c->column_height;
-	c->tex_pos = (c->draw_start - WIN_HEIGHT / 2.0f + c->column_height / 2.0f) * c->step;
+	c->tex_pos = (c->draw_start - WIN_HEIGHT / 2.0f + c->column_height / 2.0f)
+		* c->step;
 	return (0);
 }
 

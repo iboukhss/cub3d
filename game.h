@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:19:47 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/12 14:23:29 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:42:52 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,10 +104,10 @@ typedef struct s_player
 // This should hold the texture configuration data. Didn't look at this yet.
 typedef struct s_config
 {
-	char		*north_filepath;
-	char		*south_filepath;
-	char		*west_filepath;
-	char		*east_filepath;
+	char		*no;
+	char		*so;
+	char		*we;
+	char		*ea;
 	t_image		north_texture;	// store in void *img_ctx
 	t_image		south_texture;
 	t_image		west_texture;

@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 23:17:42 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/11 15:47:52 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:42:53 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,10 @@ static int	init_config(t_config *cfg, void *mlx_ctx)
 	cfg->west_texture.mlx_ctx = mlx_ctx;
 	cfg->north_texture.mlx_ctx = mlx_ctx;
 	cfg->south_texture.mlx_ctx = mlx_ctx;
-	load_xpm_file(&cfg->east_texture, cfg->east_filepath);
-	load_xpm_file(&cfg->west_texture, cfg->west_filepath);
-	load_xpm_file(&cfg->north_texture, cfg->north_filepath);
-	load_xpm_file(&cfg->south_texture, cfg->south_filepath);
+	load_xpm_file(&cfg->east_texture, cfg->ea);
+	load_xpm_file(&cfg->west_texture, cfg->we);
+	load_xpm_file(&cfg->north_texture, cfg->no);
+	load_xpm_file(&cfg->south_texture, cfg->so);
 	return (0);
 }
 
@@ -110,10 +110,10 @@ int	destroy_game(t_game *game)
 	destroy_image(&game->cfg.west_texture);
 	destroy_image(&game->cfg.north_texture);
 	destroy_image(&game->cfg.south_texture);
-	free(game->cfg.east_filepath);
-	free(game->cfg.west_filepath);
-	free(game->cfg.north_filepath);
-	free(game->cfg.south_filepath);
+	free(game->cfg.ea);
+	free(game->cfg.we);
+	free(game->cfg.no);
+	free(game->cfg.so);
 	mlx_destroy_display(game->mlx_ctx);
 	free(game->mlx_ctx);
 	return (0);

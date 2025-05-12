@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:33:06 by dennis            #+#    #+#             */
-/*   Updated: 2025/05/11 06:11:38 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:42:54 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 
 void	print_config(t_config config)
 {
-	printf("NO -> %s\n", config.north_filepath);
-	printf("SO -> %s\n", config.south_filepath);
-	printf("WE -> %s\n", config.west_filepath);
-	printf("EA -> %s\n", config.east_filepath);
+	printf("NO -> %s\n", config.no);
+	printf("SO -> %s\n", config.so);
+	printf("WE -> %s\n", config.we);
+	printf("EA -> %s\n", config.ea);
 	printf("F -> HEX %X\n", config.floor_color);
 	printf("C -> HEX %X \n", config.ceil_color);
 }

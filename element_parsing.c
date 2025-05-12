@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:34:06 by dennis            #+#    #+#             */
-/*   Updated: 2025/05/11 06:11:36 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:42:53 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,13 +96,13 @@ int	get_rgb(char *color_code, uint32_t *color)
 int	update_config(t_config *config, char *type_identifier, char *information)
 {
 	if (ft_strncmp(type_identifier, "NO", 2) == 0)
-		config->north_filepath = information;
+		config->no = information;
 	else if (ft_strncmp(type_identifier, "SO", 2) == 0)
-		config->south_filepath = information;
+		config->so = information;
 	else if (ft_strncmp(type_identifier, "WE", 2) == 0)
-		config->west_filepath = information;
+		config->we = information;
 	else if (ft_strncmp(type_identifier, "EA", 2) == 0)
-		config->east_filepath = information;
+		config->ea = information;
 	else if (*type_identifier == 'F')
 	{
 		if (get_rgb(information, &config->floor_color) != 0)
@@ -115,8 +115,8 @@ int	update_config(t_config *config, char *type_identifier, char *information)
 	}
 	else
 		return (1);
-	if (config->north_filepath != NULL && config->south_filepath != NULL && config->east_filepath != NULL
-		&& config->west_filepath != NULL && config->ceil_color != COLOR_UNSET
+	if (config->no != NULL && config->so != NULL && config->ea != NULL
+		&& config->we != NULL && config->ceil_color != COLOR_UNSET
 		&& config->floor_color != COLOR_UNSET)
 		config->done = 1;
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 14:49:08 by dennis            #+#    #+#             */
-/*   Updated: 2025/05/09 18:26:30 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 22:00:10 by dennis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,8 +102,14 @@ int	get_scene(t_game *game, char *scene_path)
 	reset_config(&game->cfg);
 	reset_map(&game->map);
 	if (read_scene(game, scene_path) != 0)
+	{
+		free_image_path(&game->cfg);
 		return (1);
+	}
 	if (validate_map(game) != 0)
+	{
+		free_image_path(&game->cfg);
 		return (1);
+	}
 	return (0);
 }

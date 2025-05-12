@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:19:47 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/12 18:19:02 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 21:37:57 by dennis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,6 +167,8 @@ void	reset_config(t_config *config);
 int		reset_map(t_map *map);
 int		validate_map(t_game *game);
 void	clone_map(t_map *src, t_map *dest);
+void	free_image_path(t_config *cfg);
+void	free_split(char **split);
 void	print_error(int default_prompt, char *error_msg);
 void	print_config(t_config config);
 void	print_map(t_map map);

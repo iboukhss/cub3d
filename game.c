@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:29:38 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/11 21:48:38 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 14:35:27 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,13 +81,37 @@ static int	draw_floor_and_ceiling(t_image *frame, t_config conf)
 	return (0);
 }
 
+static float	get_delta_dist_x(t_ray ray)
+{
+	if (ray.dir.x == 0)
+	{
+		return (INFINITY);
+	}
+	else
+	{
+		return (fabsf(1.0f / ray.dir.x));
+	}
+}
+
+static float	get_delta_dist_y(t_ray ray)
+{
+	if (ray.dir.y == 0)
+	{
+		return (INFINITY);
+	}
+	else
+	{
+		return (fabsf(1.0f / ray.dir.y));
+	}
+}
+
 // See: https://lodev.org/cgtutor/raycasting.html#Untextured_Raycaster_
 static int	init_dda(struct s_dda_ctx *d, t_ray ray)
 {
 	d->map_x = (int)ray.pos.x;
 	d->map_y = (int)ray.pos.y;
-	d->delta_dist_x = (ray.dir.x == 0) ? INFINITY : fabsf(1.0f / ray.dir.x);
-	d->delta_dist_y = (ray.dir.y == 0) ? INFINITY : fabsf(1.0f / ray.dir.y);
+	d->delta_dist_x = get_delta_dist_x(ray);
+	d->delta_dist_y = get_delta_dist_y(ray);
 	if (ray.dir.x < 0)
 	{
 		d->step_x = -1;
@@ -111,6 +135,37 @@ static int	init_dda(struct s_dda_ctx *d, t_ray ray)
 	return (0);
 }
 
+static bool	dda_done(struct s_dda_ctx d, t_map map)
+{
+	return (d.map_x < 0 || d.map_y >= map.width
+		|| d.map_y < 0 || d.map_y >= map.height
+		|| map.grid[d.map_y][d.map_x] == '1');
+}
+
+static t_orientation	get_ray_orient_x(int step_x)
+{
+	if (step_x > 0)
+	{
+		return (ORIENT_EAST);
+	}
+	else
+	{
+		return (ORIENT_WEST);
+	}
+}
+
+static t_orientation	get_ray_orient_y(int step_y)
+{
+	if (step_y > 0)
+	{
+		return (ORIENT_SOUTH);
+	}
+	else
+	{
+		return (ORIENT_NORTH);
+	}
+}
+
 static int	run_dda(t_ray *ray, struct s_dda_ctx d, t_map map)
 {
 	while (1)
@@ -119,27 +174,23 @@ static int	run_dda(t_ray *ray, struct s_dda_ctx d, t_map map)
 		{
 			d.side_dist_x += d.delta_dist_x;
 			d.map_x += d.step_x;
-			ray->side = (d.step_x > 0) ? ORIENT_EAST : ORIENT_WEST;
+			ray->side = get_ray_orient_x(d.step_x);
 		}
 		else
 		{
 			d.side_dist_y += d.delta_dist_y;
 			d.map_y += d.step_y;
-			ray->side = (d.step_y > 0) ? ORIENT_SOUTH : ORIENT_NORTH;
+			ray->side = get_ray_orient_y(d.step_y);
 		}
-		if (d.map_x < 0 || d.map_x >= map.width || d.map_y < 0 || d.map_y >= map.height || map.grid[d.map_y][d.map_x] == '1')
+		if (dda_done(d, map))
 		{
 			break ;
 		}
 	}
 	if (ray->side == ORIENT_EAST || ray->side == ORIENT_WEST)
-	{
 		ray->len = d.side_dist_x - d.delta_dist_x;
-	}
 	else if (ray->side == ORIENT_NORTH || ray->side == ORIENT_SOUTH)
-	{
 		ray->len = d.side_dist_y - d.delta_dist_y;
-	}
 	return (0);
 }
 

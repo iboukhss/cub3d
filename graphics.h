@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:53:21 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/12 14:12:06 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 17:02:12 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,14 @@
 # include <stdint.h>
 # include <X11/keysym.h>
 # include <X11/X.h>
+
+struct s_hook
+{
+	int		x_event;
+	long	x_mask;
+	int		(*func)();
+	void	*param;
+};
 
 struct s_dda
 {

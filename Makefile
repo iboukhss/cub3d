@@ -30,7 +30,8 @@ SRCS = \
 	graphics_mouse_events.c \
 	graphics_pixel_utils.c \
 	graphics_window.c \
-	vec2_utils.c
+	vec2_utils.c \
+	free.c
 
 HDRS = game.h graphics.h vec2.h libft/libft.h gnl/get_next_line.h
 

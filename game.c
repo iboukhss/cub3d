@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:29:38 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/12 14:35:27 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 14:45:05 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,23 +29,24 @@ static int	draw_tile(t_image *frame, int pos_x, int pos_y, uint32_t color)
 // Draws the tile map
 static int	draw_map(t_image *frame, t_map map)
 {
-	for (int y = 0; y < map.height; y++)
+	int	x;
+	int	y;
+
+	y = 0;
+	while (y < map.height)
 	{
-		for (int x = 0; x < map.width; x++)
+		x = 0;
+		while (x < map.width)
 		{
 			if (map.grid[y][x] == '1')
-			{
 				draw_tile(frame, x, y, COLOR_WHITE);
-			}
 			else if (map.grid[y][x] == '0')
-			{
 				draw_tile(frame, x, y, COLOR_BLACK);
-			}
 			else
-			{
 				draw_tile(frame, x, y, COLOR_GRAY);
-			}
+			x++;
 		}
+		y++;
 	}
 	return (0);
 }
@@ -252,8 +253,10 @@ static int	draw_slice(t_image *img, int col_x, struct s_col_ctx c)
 {
 	int			tex_y;
 	uint32_t	color;
+	int			y;
 
-	for (int y = c.draw_start; y < c.draw_end; y++)
+	y = c.draw_start;
+	while (y < c.draw_end)
 	{
 		tex_y = (int)c.tex_pos;
 		if (tex_y < 0)
@@ -267,6 +270,7 @@ static int	draw_slice(t_image *img, int col_x, struct s_col_ctx c)
 		color = get_pixel(c.tex, c.tex_x, tex_y);
 		put_pixel(img, col_x, y, color);
 		c.tex_pos += c.step;
+		y++;
 	}
 	return (0);
 }
@@ -301,9 +305,11 @@ static int	do_raycasting(t_game *game)
 	t_camera	cam;
 	float		camera_x;
 	t_ray		ray;
+	int			x;
 
 	cam = game->player.cam;
-	for (int x = 0; x < WIN_WIDTH; x++)
+	x = 0;
+	while (x < WIN_WIDTH)
 	{
 		camera_x = ((2.0f * x) / (float)WIN_WIDTH) - 1.0f;
 		ray.pos = cam.pos;
@@ -312,6 +318,7 @@ static int	do_raycasting(t_game *game)
 		cast_ray(&ray, game->map);
 		draw_ray_on_minimap(game, ray);
 		draw_wall_column(game, x, ray);
+		x++;
 	}
 	return (0);
 }

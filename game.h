@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:19:47 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/11 21:00:53 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 14:23:29 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 # include "graphics.h"
 # include "vec2.h"
 
+# include <stdbool.h>
 # include <stddef.h>
 
 struct s_dda_ctx

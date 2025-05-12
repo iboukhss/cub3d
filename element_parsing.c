@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:34:06 by dennis            #+#    #+#             */
-/*   Updated: 2025/05/12 17:42:53 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 21:52:39 by dennis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,9 +70,7 @@ int	get_rgb(char *color_code, uint32_t *color)
 	uint8_t	red;
 	uint8_t	green;
 	uint8_t	blue;
-	size_t	i;
 
-	i = 0;
 	if (color_code == NULL)
 		return (1);
 	split = ft_split(color_code, ',');
@@ -82,15 +80,12 @@ int	get_rgb(char *color_code, uint32_t *color)
 		|| check_rgb(split[2], &blue) != 0)
 	{
 		print_error(1, "Invalid scene. RGB code invalid.");
-		return (free(color_code), 1);
+		return (free(color_code), free_split(split), 1);
 	}
-	while (split[i] != NULL)
-	{
-		free(split[i]);
-		i++;
-	}
+	free_split(split);
 	*color = rgb_to_hex(red, green, blue);
-	return (free(color_code), free(split), 0);
+	free(color_code);
+	return (0);
 }
 
 int	update_config(t_config *config, char *type_identifier, char *information)
@@ -145,6 +140,6 @@ int	extract_param(t_config *config, char *line)
 	if (!information)
 		return (free(type_identifier), 1);
 	if (update_config(config, type_identifier, information) != 0)
-		return (free(type_identifier), free(information), 1);
+		return (free(type_identifier), 1);
 	return (free(type_identifier), 0);
 }

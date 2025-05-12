@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:53:21 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/12 12:42:38 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 14:12:06 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,13 @@
 # include <stdint.h>
 # include <X11/keysym.h>
 # include <X11/X.h>
+
+struct s_dda
+{
+	int		steps;
+	float	x_inc;
+	float	y_inc;
+};
 
 // Convenient MLX data structures
 typedef struct s_image

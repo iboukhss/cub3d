@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:27:45 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/12 13:28:23 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 14:12:21 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,34 +197,61 @@ uint32_t	get_pixel(t_image *img, int pos_x, int pos_y)
 
 int	fill_rect(t_image *img, t_rect rect, uint32_t color)
 {
-	for (int y = rect.y; y < rect.y + rect.h; y++)
+	int	x;
+	int	y;
+
+	y = rect.y;
+	while (y < rect.y + rect.h)
 	{
-		for (int x = rect.x; x < rect.x + rect.w; x++)
+		x = rect.x;
+		while (x < rect.x + rect.w)
 		{
 			put_pixel(img, x, y, color);
+			x++;
 		}
+		y++;
 	}
+	return (0);
+}
+
+static int	init_dda(struct s_dda *d, t_line line)
+{
+	float	dx;
+	float	dy;
+
+	dx = line.x1 - line.x0;
+	dy = line.y1 - line.y0;
+	if (fabsf(dx) > fabsf(dy))
+	{
+		d->steps = fabsf(dx);
+	}
+	else
+	{
+		d->steps = fabsf(dy);
+	}
+	d->x_inc = dx / (float)d->steps;
+	d->y_inc = dy / (float)d->steps;
 	return (0);
 }
 
 // Using DDA to draw lines
 int	draw_line(t_image *img, t_line line, uint32_t color)
 {
-	float	dx = line.x1 - line.x0;
-	float	dy = line.y1 - line.y0;
-	int		steps = fabsf(dx) > fabsf(dy) ? fabsf(dx) : fabsf(dy);
+	struct s_dda	dda;
+	float			x;
+	float			y;
+	int				i;
 
-	float	x_inc = dx / (float)steps;
-	float	y_inc = dy / (float)steps;
-
-	float	x = line.x0;
-	float	y = line.y0;
-
-	for (int i = 0; i <= steps; i++)
+	init_dda(&dda, line);
+	x = line.x0;
+	y = line.y0;
+	i = 0;
+	while (i <= dda.steps)
 	{
 		put_pixel(img, (int)(x + 0.5f), (int)(y + 0.5f), color);
-		x += x_inc;
-		y += y_inc;
+		x += dda.x_inc;
+		y += dda.y_inc;
+		i++;
 	}
 	return (0);
 }

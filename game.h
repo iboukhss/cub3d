@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:19:47 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/12 17:42:52 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 18:02:17 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,6 +141,17 @@ int		render_scene(void *param);
 int		keyrelease_main(int keysym, void *param);
 int		keyrelease_debug(int keysym, void *param);
 int		keypress_main(int keysym, void *param);
+
+// Draw
+int		draw_map(t_image *frame, t_map map);
+int		draw_player(t_image *frame, t_player player);
+int		draw_floor_and_ceiling(t_image *frame, t_config conf);
+int		draw_ray_on_minimap(t_game *game, t_ray ray);
+int		draw_wall_column(t_game *game, int col_x, t_ray ray);
+
+// DDA
+int		init_dda(struct s_dda_ctx *d, t_ray ray);
+int		run_dda(t_ray *ray, struct s_dda_ctx d, t_map map);
 
 // Newly added
 char	*get_next_line(int fd);

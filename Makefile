@@ -17,8 +17,12 @@ SRCS = \
 	map_parsing.c \
 	map_utils.c \
 	game.c \
+	game_draw.c \
+	game_draw_wall_column.c \
 	game_events.c \
 	game_init.c \
+	game_init_dda.c \
+	game_run_dda.c \
 	graphics_utils.c \
 	vec2_utils.c
 

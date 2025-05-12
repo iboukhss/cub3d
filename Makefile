@@ -19,7 +19,8 @@ SRCS = \
 	game.c \
 	game_draw.c \
 	game_draw_wall_column.c \
-	game_events.c \
+	game_events_main.c \
+	game_events_debug.c \
 	game_init.c \
 	game_init_dda.c \
 	game_run_dda.c \

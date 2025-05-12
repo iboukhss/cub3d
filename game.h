@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:19:47 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/12 18:02:17 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 18:19:02 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,15 +132,15 @@ typedef struct s_game
 int		init_game(t_game *game);
 int		destroy_game(t_game *game);
 
-// Hooks
+// Event hooks
+int		keypress_main(int keysym, void *param);
+int		keyrelease_main(int keysym, void *param);
 int		close_main_window(void *param);
+
+int		keyrelease_debug(int keysym, void *param);
 int		close_debug_window(void *param);
 
 int		render_scene(void *param);
-
-int		keyrelease_main(int keysym, void *param);
-int		keyrelease_debug(int keysym, void *param);
-int		keypress_main(int keysym, void *param);
 
 // Draw
 int		draw_map(t_image *frame, t_map map);

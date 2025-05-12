@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   game_events.c                                      :+:      :+:    :+:   */
+/*   game_events_main.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/11 15:25:05 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/10 17:38:27 by iboukhss         ###   ########.fr       */
+/*   Created: 2025/05/12 18:13:43 by iboukhss          #+#    #+#             */
+/*   Updated: 2025/05/12 18:16:53 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,49 +14,6 @@
 
 #include <math.h>
 #include <stdio.h>
-
-int	close_main_window(void *param)
-{
-	t_game	*game;
-
-	game = (t_game *)param;
-	mlx_loop_end(game->mlx_ctx);
-	return (0);
-}
-
-int	close_debug_window(void *param)
-{
-	t_game	*game;
-
-	game = (t_game *)param;
-	destroy_window(&game->debug);
-	return (0);
-}
-
-int	keyrelease_main(int keysym, void *param)
-{
-	t_game	*game;
-
-	game = (t_game *)param;
-	if (keysym == XK_Escape)
-	{
-		close_main_window(param);
-	}
-	if (keysym == XK_m || keysym == XK_F1)
-	{
-		create_window(&game->debug);
-	}
-	return (0);
-}
-
-int	keyrelease_debug(int keysym, void *param)
-{
-	if (keysym == XK_Escape)
-	{
-		close_debug_window(param);
-	}
-	return (0);
-}
 
 static void	print_position(t_player *player)
 {
@@ -113,5 +70,21 @@ int	keypress_main(int keysym, void *param)
 		rotate_camera(&game->player.cam, -10);
 	}
 	print_position(&game->player);
+	return (0);
+}
+
+int	keyrelease_main(int keysym, void *param)
+{
+	t_game	*game;
+
+	game = (t_game *)param;
+	if (keysym == XK_Escape)
+	{
+		close_main_window(param);
+	}
+	if (keysym == XK_m || keysym == XK_F1)
+	{
+		create_window(&game->debug);
+	}
 	return (0);
 }

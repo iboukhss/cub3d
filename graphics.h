@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:53:21 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/10 17:49:14 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 12:42:38 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,23 +46,27 @@ typedef struct s_image
 	int		endian;
 }	t_image;
 
+typedef int	(*t_simple_fn)(void *param);
+typedef int	(*t_key_fn)(int keysym, void *param);
+typedef int	(*t_button_fn)(int keysym, int x, int y, void *param);
+
 typedef struct s_window
 {
-	void	*mlx_ctx;
-	void	*win_ctx;
-	t_image	frame;
-	int		width;
-	int		height;
-	char	*title;
-	int		(*loop_hook)(void *);
-	int		(*key_press_hook)(int, void *);
-	int		(*key_release_hook)(int, void *);
-	int		(*button_press_hook)(int, int, int, void *);
-	int		(*button_release_hook)(int, int, int, void *);
-	int		(*motion_notify_hook)(int, int, int, void *);
-	int		(*expose_hook)(void *);
-	int		(*destroy_notify_hook)(void *);
-	void	*param;
+	void		*mlx_ctx;
+	void		*win_ctx;
+	t_image		frame;
+	int			width;
+	int			height;
+	char		*title;
+	t_simple_fn	loop_hook;
+	t_key_fn	key_press_hook;
+	t_key_fn	key_release_hook;
+	t_button_fn	button_press_hook;
+	t_button_fn	button_release_hook;
+	t_button_fn	motion_notify_hook;
+	t_simple_fn	expose_hook;
+	t_simple_fn	destroy_notify_hook;
+	void		*param;
 }	t_window;
 
 // Raster types

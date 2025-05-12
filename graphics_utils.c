@@ -6,13 +6,84 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:27:45 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/10 17:48:42 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 13:28:23 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "graphics.h"
 
 #include <math.h>
+
+static void	add_loop_hook(t_window *win)
+{
+	if (win->loop_hook)
+	{
+		mlx_loop_hook(win->mlx_ctx, win->loop_hook, win->param);
+	}
+}
+
+static void	add_key_press_hook(t_window *win)
+{
+	if (win->key_press_hook)
+	{
+		mlx_hook(win->win_ctx, KeyPress, KeyPressMask, win->key_press_hook, win->param);
+	}
+}
+
+static void	add_key_release_hook(t_window *win)
+{
+	if (win->key_release_hook)
+	{
+		mlx_hook(win->win_ctx, KeyRelease, KeyReleaseMask, win->key_release_hook, win->param);
+	}
+}
+
+static void	add_button_press_hook(t_window *win)
+{
+	if (win->button_press_hook)
+	{
+		mlx_hook(win->win_ctx, ButtonPress, ButtonPressMask, win->button_press_hook, win->param);
+	}
+}
+
+static void	add_button_release_hook(t_window *win)
+{
+	if (win->button_release_hook)
+	{
+		mlx_hook(win->win_ctx, ButtonRelease, ButtonReleaseMask, win->button_release_hook, win->param);
+	}
+}
+
+static void	add_motion_notify_hook(t_window *win)
+{
+	if (win->motion_notify_hook)
+	{
+		mlx_hook(win->win_ctx, MotionNotify, PointerMotionMask, win->motion_notify_hook, win->param);
+	}
+}
+
+static void	add_expose_hook(t_window *win)
+{
+	if (win->expose_hook)
+	{
+		mlx_hook(win->win_ctx, Expose, ExposureMask, win->expose_hook, win->param);
+	}
+}
+
+static void	add_destroy_notify_hook(t_window *win)
+{
+	if (win->destroy_notify_hook)
+	{
+		mlx_hook(win->win_ctx, DestroyNotify, StructureNotifyMask, win->destroy_notify_hook, win->param);
+	}
+}
+
+int	create_image(t_image *img, int width, int height)
+{
+	img->img_ctx = mlx_new_image(img->mlx_ctx, width, height);
+	img->addr = mlx_get_data_addr(img->img_ctx, &img->bits_per_pixel, &img->bytes_per_line, &img->endian);
+	return (0);
+}
 
 int	create_window(t_window *win)
 {
@@ -23,27 +94,15 @@ int	create_window(t_window *win)
 	win->win_ctx = mlx_new_window(win->mlx_ctx, win->width, win->height, win->title);
 	win->frame.width = win->width;
 	win->frame.height = win->height;
-	win->frame.img_ctx = mlx_new_image(win->mlx_ctx, win->frame.width, win->frame.height);
-	win->frame.addr = mlx_get_data_addr(win->frame.img_ctx,
-										&win->frame.bits_per_pixel,
-										&win->frame.bytes_per_line,
-										&win->frame.endian);
-	if (win->loop_hook)
-		mlx_loop_hook(win->mlx_ctx, win->loop_hook, win->param);
-	if (win->key_press_hook)
-		mlx_hook(win->win_ctx, KeyPress, KeyPressMask, win->key_press_hook, win->param);
-	if (win->key_release_hook)
-		mlx_hook(win->win_ctx, KeyRelease, KeyReleaseMask, win->key_release_hook, win->param);
-	if (win->button_press_hook)
-		mlx_hook(win->win_ctx, ButtonPress, ButtonPressMask, win->button_press_hook, win->param);
-	if (win->button_release_hook)
-		mlx_hook(win->win_ctx, ButtonRelease, ButtonReleaseMask, win->button_release_hook, win->param);
-	if (win->motion_notify_hook)
-		mlx_hook(win->win_ctx, MotionNotify, PointerMotionMask, win->motion_notify_hook, win->param);
-	if (win->expose_hook)
-		mlx_hook(win->win_ctx, Expose, ExposureMask, win->expose_hook, win->param);
-	if (win->destroy_notify_hook)
-		mlx_hook(win->win_ctx, DestroyNotify, StructureNotifyMask, win->destroy_notify_hook, win->param);
+	create_image(&win->frame, win->frame.width, win->frame.height);
+	add_loop_hook(win);
+	add_key_press_hook(win);
+	add_key_release_hook(win);
+	add_button_press_hook(win);
+	add_button_release_hook(win);
+	add_motion_notify_hook(win);
+	add_expose_hook(win);
+	add_destroy_notify_hook(win);
 	return (0);
 }
 

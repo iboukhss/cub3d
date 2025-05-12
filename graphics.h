@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:53:21 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/12 17:02:12 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/12 18:47:17 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,19 +108,38 @@ typedef struct s_rect
 	int	h;
 }	t_rect;
 
-int			create_window(t_window *win);
-int			destroy_window(t_window *win);
-
+// Image
+int			create_image(t_image *img, int width, int height);
 int			destroy_image(t_image *img);
 
 int			load_xpm_data(t_image *img, char **xpm_data, void *mlx_ctx);
 int			load_xpm_file(t_image *img, char *filename);
 
+// Window
+int			create_window(t_window *win);
+int			destroy_window(t_window *win);
+
+// Pixel
 uint32_t	rgb_to_hex(uint8_t red, uint8_t green, uint8_t blue);
 
 int			put_pixel(t_image *img, int pos_x, int pos_y, uint32_t color);
 uint32_t	get_pixel(t_image *img, int pos_x, int pos_y);
+
+// Drawing
 int			fill_rect(t_image *img, t_rect rect, uint32_t color);
 int			draw_line(t_image *img, t_line line, uint32_t color);
+
+// Event hooks
+void		register_hook(t_window *win, struct s_hook h);
+
+void		add_loop_hook(t_window *win);
+void		add_key_press_hook(t_window *win);
+void		add_key_release_hook(t_window *win);
+
+void		add_button_press_hook(t_window *win);
+void		add_button_release_hook(t_window *win);
+void		add_motion_notify_hook(t_window *win);
+void		add_expose_hook(t_window *win);
+void		add_destroy_notify_hook(t_window *win);
 
 #endif // GRAPHICS_H

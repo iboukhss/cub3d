@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 23:17:42 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/13 16:20:10 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/13 18:30:43 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,9 +97,6 @@ int	init_game(t_game *game)
 	init_debug_window(&game->debug, game);
 	init_camera(&game->player.cam, game->player);
 	if (init_config(&game->cfg, game->mlx_ctx) != 0)
-	{
-		print_error(1, "Failed to load textures");
 		return (1);
-	}
 	return (0);
 }

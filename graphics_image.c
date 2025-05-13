@@ -6,11 +6,13 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 18:38:26 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/13 03:33:54 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/13 18:38:36 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "graphics.h"
+
+#include <stdio.h>
 
 int	create_image(t_image *img, int width, int height)
 {
@@ -48,6 +50,7 @@ int	load_xpm_file(t_image *img, char *filename)
 			&img->height);
 	if (!img->img_ctx)
 	{
+		printf("Error\nFailed to load XPM image '%s'\n", filename);
 		return (1);
 	}
 	img->addr = mlx_get_data_addr(img->img_ctx, &img->bits_per_pixel,

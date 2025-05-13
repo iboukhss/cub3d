@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 18:13:43 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/12 18:16:53 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/13 18:58:33 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,19 +53,19 @@ int	keypress_main(int keysym, void *param)
 	t_game	*game;
 
 	game = (t_game *)param;
-	if (keysym == XK_Up)
+	if (keysym == XK_Up || keysym == XK_w)
 	{
 		move_camera(&game->player.cam, 0.33f);
 	}
-	if (keysym == XK_Down)
+	if (keysym == XK_Down || keysym == XK_s)
 	{
 		move_camera(&game->player.cam, -0.33f);
 	}
-	if (keysym == XK_Left)
+	if (keysym == XK_Left || keysym == XK_a)
 	{
 		rotate_camera(&game->player.cam, 10);
 	}
-	if (keysym == XK_Right)
+	if (keysym == XK_Right || keysym == XK_d)
 	{
 		rotate_camera(&game->player.cam, -10);
 	}
@@ -78,7 +78,7 @@ int	keyrelease_main(int keysym, void *param)
 	t_game	*game;
 
 	game = (t_game *)param;
-	if (keysym == XK_Escape)
+	if (keysym == XK_Escape || keysym == XK_q)
 	{
 		close_main_window(param);
 	}

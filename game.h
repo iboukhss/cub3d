@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:19:47 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/12 21:37:57 by dennis           ###   ########.fr       */
+/*   Updated: 2025/05/13 16:17:54 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,9 @@
 
 # define WIN_WIDTH 960
 # define WIN_HEIGHT 600
+
 # define TILE_SIZE 16
+# define PLAYER_WIDTH 0.5f
 
 // 255*255 is approx. 64 kB
 # define MAX_GRID_ROW 255
@@ -97,7 +99,6 @@ typedef struct s_player
 	int				start_x;
 	int				start_y;
 	t_orientation	spawn_orientation;
-	float			width;
 	t_camera		cam;
 }	t_player;
 

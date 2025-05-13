@@ -6,7 +6,7 @@
 /*   By: dennis <dennis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 15:54:27 by dennis            #+#    #+#             */
-/*   Updated: 2025/05/12 17:42:53 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/13 16:11:42 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,16 @@ void	set_player_pos(t_game *game, char orientation, int y, int x)
 	game->player.spawn_orientation = orientation;
 	game->player.start_x = x;
 	game->player.start_y = y;
+	if (orientation == 'N')
+		game->player.spawn_orientation = ORIENT_NORTH;
+	else if (orientation == 'S')
+		game->player.spawn_orientation = ORIENT_SOUTH;
+	else if (orientation == 'W')
+		game->player.spawn_orientation = ORIENT_WEST;
+	else if (orientation == 'E')
+		game->player.spawn_orientation = ORIENT_EAST;
+	else
+		game->player.spawn_orientation = ORIENT_UNKNOWN;
 }
 
 void	reset_config(t_config *config)

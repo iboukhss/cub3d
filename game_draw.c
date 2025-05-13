@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 17:49:31 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/12 17:53:58 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/13 16:17:33 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,10 @@ int	draw_player(t_image *frame, t_player player)
 {
 	t_rect	hitbox;
 
-	hitbox.x = (player.cam.pos.x - (player.width / 2)) * TILE_SIZE;
-	hitbox.y = (player.cam.pos.y - (player.width / 2)) * TILE_SIZE;
-	hitbox.w = player.width * TILE_SIZE;
-	hitbox.h = player.width * TILE_SIZE;
+	hitbox.x = (player.cam.pos.x - (PLAYER_WIDTH / 2)) * TILE_SIZE;
+	hitbox.y = (player.cam.pos.y - (PLAYER_WIDTH / 2)) * TILE_SIZE;
+	hitbox.w = PLAYER_WIDTH * TILE_SIZE;
+	hitbox.h = PLAYER_WIDTH * TILE_SIZE;
 	fill_rect(frame, hitbox, COLOR_RED);
 	return (0);
 }

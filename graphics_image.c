@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 18:38:26 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/12 18:38:58 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/13 03:33:54 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	create_image(t_image *img, int width, int height)
 
 int	destroy_image(t_image *img)
 {
-	if (!img->img_ctx)
+	if (!img->mlx_ctx || !img->img_ctx)
 	{
 		return (1);
 	}

@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:29:38 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/12 18:19:50 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/13 03:24:24 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,9 +79,15 @@ int	main(int argc, char *argv[])
 		return (1);
 	}
 	if (get_scene(&game, argv[1]) != 0)
+	{
 		return (1);
+	}
 	print_error(0, "map ok\n");
-	init_game(&game);
+	if (init_game(&game) != 0)
+	{
+		destroy_game(&game);
+		return (1);
+	}
 	create_window(&game.main);
 	create_window(&game.debug);
 	mlx_loop(game.mlx_ctx);

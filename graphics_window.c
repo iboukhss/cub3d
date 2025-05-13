@@ -6,7 +6,7 @@
 /*   By: iboukhss <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 18:45:30 by iboukhss          #+#    #+#             */
-/*   Updated: 2025/05/12 18:45:30 by iboukhss         ###   ########.fr       */
+/*   Updated: 2025/05/13 03:33:34 by iboukhss         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	create_window(t_window *win)
 
 int	destroy_window(t_window *win)
 {
-	if (!win->win_ctx)
+	if (!win->mlx_ctx || !win->win_ctx)
 	{
 		return (1);
 	}

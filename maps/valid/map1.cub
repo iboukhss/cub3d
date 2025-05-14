@@ -1,7 +1,7 @@
-NO ./textures/greystone.xpm
-SO ./textures/greystone.xpm
-WE ./textures/greystone_dark.xpm
-EA ./textures/greystone_dark.xpm
+NO ./textures/doom_green.xpm
+SO ./textures/doom_green.xpm
+WE ./textures/doom_green2.xpm
+EA ./textures/doom_green2.xpm
 F 211,211,211
 C 69,69,69
 
